@@ -1,6 +1,7 @@
+import { validateContactDetails } from '../shared/contact-validation.js';
+
 const MAX_BODY_BYTES = 8_192;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^[0-9+()\s-]{8,24}$/;
+const RESEND_TIMEOUT_MS = 10_000;
 
 function clean(value, maxLength) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
@@ -31,9 +32,8 @@ export default async function handler(request, response) {
   }
 
   const body = parsedBody && typeof parsedBody === 'object' ? parsedBody : {};
-  const fullname = clean(body.fullname, 100);
-  const email = clean(body.email, 254);
-  const phone = clean(body.phone, 24);
+  const { data, errors } = validateContactDetails(body);
+  const { fullname, email, phone } = data;
   const website = clean(body.website, 120);
 
   // Quietly accept likely bot submissions so the endpoint is not useful to spammers.
@@ -41,9 +41,10 @@ export default async function handler(request, response) {
     return sendJson(response, 200, { ok: true });
   }
 
-  if (fullname.length < 2 || !EMAIL_PATTERN.test(email) || !PHONE_PATTERN.test(phone)) {
+  if (Object.keys(errors).length > 0) {
     return sendJson(response, 400, {
-      message: 'Please check your name, email address, and phone number.',
+      message: 'Please correct the highlighted fields and try again.',
+      errors,
     });
   }
 
@@ -64,6 +65,7 @@ export default async function handler(request, response) {
         'Content-Type': 'application/json',
         'Idempotency-Key': `website-enquiry/${crypto.randomUUID()}`,
       },
+      signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
       body: JSON.stringify({
         from: CONTACT_FROM_EMAIL,
         to: [CONTACT_TO_EMAIL],

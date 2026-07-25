@@ -317,7 +317,13 @@
   .field input[aria-invalid="true"]{border-color:#ff7b7b;box-shadow:0 0 0 3px rgba(255,123,123,.16);}
   .field__error{font-size:14px;font-weight:600;line-height:20px;color:#ffb0b0;}
   .form-card__actions{display:flex;flex-direction:column;gap:8px;}
-  .form-card .btn{width:100%;min-height:56px;justify-content:center;font-size:18px;padding:0 24px;}
+  /* The site-wide CTA remains bright; this form variant uses darker stops so
+     its white 18px label clears WCAG AA at every point of the gradient. */
+  .form-card .btn{
+    width:100%;min-height:56px;justify-content:center;font-size:18px;padding:0 24px;
+    background:linear-gradient(90deg,#007C94 0%,#2459D3 100%);
+    color:#fff;
+  }
   .form-card .btn:disabled{
     cursor:wait;
     opacity:.7;
@@ -332,7 +338,7 @@
   .form-card__status:empty{display:none;}
   .form-card__status.is-success{color:#79e7c5;}
   .form-card__status.is-error{color:#ff9e9e;}
-  .form-card__privacy{font-size:14px;line-height:20px;color:var(--muted);}
+  .form-card__privacy{font-size:14px;line-height:20px;color:var(--muted);text-align:center;}
   .sr-only{
     position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
     clip:rect(0,0,0,0);white-space:nowrap;border:0;
@@ -775,7 +781,7 @@
 
     .card{padding:23px;}
     .form-card{padding:24px;}
-    .form-card .btn{padding:0 16px;}
+    .form-card .btn{padding:0 16px;font-size:16px;}
     .case__client{white-space:normal;}
     .results__link{white-space:normal;}
 
@@ -854,6 +860,14 @@
     .btn:hover .arrow,
     .nav__cta:hover .arrow{transform:translateX(5px);}
 
+    .form-card .btn:hover{
+      filter:none;
+      box-shadow:
+        0 18px 44px rgba(0,67,212,.34),
+        0 0 40px rgba(0,124,148,.24),
+        inset 0 1px rgba(255,255,255,.22);
+    }
+
     .card:hover{
       transform:translateY(-6px);
       border-color:rgba(0,188,212,.62);
@@ -908,6 +922,7 @@
     animation:cta-spinner 680ms linear infinite;
   }
   .btn[aria-busy="true"] .arrow img{opacity:0;}
+  .form-card .btn:disabled{opacity:1;}
 
   .floating-cta-bar{
     position:fixed;

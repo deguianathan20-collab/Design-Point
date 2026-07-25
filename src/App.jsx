@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { CONTACT_LIMITS, validateContactDetails } from '../shared/contact-validation.js';
 
 const asset = (fileName) => `/assets/${fileName}`;
 
@@ -337,24 +338,73 @@ function LogoMarquee({ reducedMotion }) {
 
 function ContactForm() {
   const [status, setStatus] = useState({ state: 'idle', message: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  function focusFirstInvalidField(form, errors) {
+    const firstInvalidField = ['fullname', 'email', 'phone'].find((name) => errors[name]);
+    if (!firstInvalidField) return;
+
+    window.requestAnimationFrame(() => form.elements.namedItem(firstInvalidField)?.focus());
+  }
+
+  function handleFieldBlur(event) {
+    const { name, form } = event.currentTarget;
+    const { errors } = validateContactDetails(Object.fromEntries(new FormData(form)));
+
+    if (errors[name]) {
+      setFieldErrors((currentErrors) => ({ ...currentErrors, [name]: errors[name] }));
+    }
+  }
+
+  function handleFieldInput(event) {
+    const { name } = event.currentTarget;
+
+    setFieldErrors((currentErrors) => {
+      if (!currentErrors[name]) return currentErrors;
+      const nextErrors = { ...currentErrors };
+      delete nextErrors[name];
+      return nextErrors;
+    });
+
+    if (status.state !== 'idle' && status.state !== 'submitting') {
+      setStatus({ state: 'idle', message: '' });
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
+    const formData = Object.fromEntries(new FormData(form));
+    const { errors } = validateContactDetails(formData);
 
-    if (!form.reportValidity()) return;
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setStatus({ state: 'error', message: 'Please correct the highlighted fields and try again.' });
+      focusFirstInvalidField(form, errors);
+      return;
+    }
 
+    setFieldErrors({});
     setStatus({ state: 'submitting', message: 'Sending your request…' });
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 15_000);
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify(formData),
+        signal: controller.signal,
       });
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
+        if (result.errors && typeof result.errors === 'object') {
+          setFieldErrors(result.errors);
+          setStatus({ state: 'error', message: 'Please correct the highlighted fields and try again.' });
+          focusFirstInvalidField(form, result.errors);
+          return;
+        }
         throw new Error(result.message || 'We could not send your request. Please try again.');
       }
 
@@ -366,70 +416,123 @@ function ContactForm() {
     } catch (error) {
       setStatus({
         state: 'error',
-        message: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+        message:
+          error instanceof DOMException && error.name === 'AbortError'
+            ? 'This is taking longer than expected. Please try again or call 1300 123 456.'
+            : error instanceof Error
+              ? error.message
+              : 'Something went wrong. Please try again.',
       });
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }
 
   const isSubmitting = status.state === 'submitting';
 
   return (
-    <form className="form-card" onSubmit={handleSubmit} aria-busy={isSubmitting}>
-      <h3>Let’s get your website going!</h3>
+    <form
+      className="form-card"
+      onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
+      aria-labelledby="contact-form-title"
+      noValidate
+    >
+      <div className="form-card__header">
+        <h3 id="contact-form-title">Let’s get your website going!</h3>
+        <p>All fields are required.</p>
+      </div>
       <div className="form-card__fields">
         <div className="field">
-          <label htmlFor="fullname">Full name*</label>
+          <label htmlFor="fullname">
+            Full name <span aria-hidden="true">*</span>
+            <span className="sr-only"> required</span>
+          </label>
           <input
             id="fullname"
             name="fullname"
             type="text"
             autoComplete="name"
-            maxLength="100"
+            maxLength={CONTACT_LIMITS.fullname}
             required
+            aria-invalid={fieldErrors.fullname ? 'true' : undefined}
+            aria-describedby={fieldErrors.fullname ? 'fullname-error' : undefined}
+            onBlur={handleFieldBlur}
+            onInput={handleFieldInput}
           />
+          {fieldErrors.fullname && (
+            <p className="field__error" id="fullname-error">
+              {fieldErrors.fullname}
+            </p>
+          )}
         </div>
         <div className="field">
-          <label htmlFor="email">Email address*</label>
+          <label htmlFor="email">
+            Email address <span aria-hidden="true">*</span>
+            <span className="sr-only"> required</span>
+          </label>
           <input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
             inputMode="email"
-            maxLength="254"
+            maxLength={CONTACT_LIMITS.email}
             required
+            aria-invalid={fieldErrors.email ? 'true' : undefined}
+            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+            onBlur={handleFieldBlur}
+            onInput={handleFieldInput}
           />
+          {fieldErrors.email && (
+            <p className="field__error" id="email-error">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
         <div className="field">
-          <label htmlFor="phone">Phone number*</label>
+          <label htmlFor="phone">
+            Phone number <span aria-hidden="true">*</span>
+            <span className="sr-only"> required</span>
+          </label>
           <input
             id="phone"
             name="phone"
             type="tel"
             autoComplete="tel"
             inputMode="tel"
-            pattern="[0-9+()\s-]{8,24}"
-            title="Enter a phone number using digits, spaces, brackets, plus signs, or hyphens."
-            maxLength="24"
+            maxLength={CONTACT_LIMITS.phone}
             required
+            aria-invalid={fieldErrors.phone ? 'true' : undefined}
+            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            onBlur={handleFieldBlur}
+            onInput={handleFieldInput}
           />
+          {fieldErrors.phone && (
+            <p className="field__error" id="phone-error">
+              {fieldErrors.phone}
+            </p>
+          )}
         </div>
         <div className="hp-field" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input id="website" name="website" type="text" tabIndex="-1" autoComplete="off" />
         </div>
       </div>
-      <button className="btn" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Sending…' : 'Get a free audit'}
-        <ArrowIcon />
-      </button>
-      <p
-        className={`form-card__status ${status.state !== 'idle' ? `is-${status.state}` : ''}`.trim()}
-        role="status"
-        aria-live="polite"
-      >
-        {status.message}
-      </p>
+      <div className="form-card__actions">
+        <button className="btn" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Sending request…' : 'Get my free proposal'}
+          <ArrowIcon />
+        </button>
+        <p className="form-card__privacy">We’ll only use your details to respond to your enquiry.</p>
+        <p
+          className={`form-card__status ${status.state !== 'idle' ? `is-${status.state}` : ''}`.trim()}
+          role={status.state === 'error' ? 'alert' : 'status'}
+          aria-live={status.state === 'error' ? 'assertive' : 'polite'}
+        >
+          {status.message}
+        </p>
+      </div>
     </form>
   );
 }
