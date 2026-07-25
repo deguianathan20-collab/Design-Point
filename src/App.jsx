@@ -225,8 +225,10 @@ function Hero() {
         </a>
         <div className="nav__right">
           <a className="nav__phone" href="tel:1300123456">
-            1300 123 456
+            <Image file="phone.svg" alt="" aria-hidden="true" />
+            <span>1300 123 456</span>
           </a>
+          <ProposalButton className="nav__cta" />
         </div>
       </header>
 
