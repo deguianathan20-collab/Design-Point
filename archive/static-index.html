@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Design Point — High-Performance Web Design Melbourne</title>
+<meta name="description" content="Melbourne web design agency building fast, secure, conversion-focused websites. 12+ years of experience, 5.0 from 31 Google reviews. Get a free website proposal.">
+<meta property="og:title" content="We Design High-Performance Websites That Perform and Convert">
+<meta property="og:description" content="Melbourne-based team building fast, secure, conversion-focused websites engineered for long-term growth.">
+<meta property="og:type" content="website">
+<!-- og:image must be an absolute URL — set to the deployed domain before launch -->
+<meta property="og:image" content="assets/hero-person.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="assets/hero-person.webp">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0F19;
+    --card:#000D20;
+    --faq-bg:#0B0B12;
+    --cyan:#00BCD4;
+    --blue:#3877FF;
+    --blue-deep:#0043D4;
+    --accent:#3ABBFB;
+    --muted:#9CA3AF;
+    --hairline:rgba(255,255,255,0.12);
+    --grad:linear-gradient(90deg,#00BCD4 0%,#3877FF 100%);
+    --ease-out:cubic-bezier(.22,1,.36,1);
+    --ease-standard:cubic-bezier(.2,.8,.2,1);
+    --motion-fast:180ms;
+    --motion-medium:360ms;
+    --motion-slow:720ms;
+    /* CTA label colour.
+       KNOWN WCAG AA EXCEPTION: white on the cyan gradient stop measures
+       2.30:1 and on the blue stop 4.00:1, against a 4.5:1 requirement
+       (18px bold falls under the 18.66px large-text threshold).
+       Switching this to #0B0F19 would score 8.34:1 / 4.79:1 and pass
+       without altering the gradient. Retained as white by design choice. */
+    --ink:#fff;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:var(--bg);
+    font-family:'Montserrat',sans-serif;
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  img{display:block;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+
+  .page{
+    width:1440px;
+    margin:0 auto;
+    position:relative;
+    overflow-x:hidden;
+    overflow-x:clip;
+  }
+
+  /* ---------- primitives ---------- */
+  .arrow{position:relative;width:8.168px;height:8.168px;flex-shrink:0;}
+  .arrow img{position:absolute;left:-12.24%;right:-17.31%;top:-12.24%;bottom:-12.24%;width:auto;height:auto;}
+
+  .btn{
+    position:relative;
+    isolation:isolate;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 30px;
+    border:2px solid transparent;
+    border-radius:999px;
+    background:var(--grad);
+    background-size:180% 100%;
+    background-position:0 50%;
+    box-shadow:
+      0 12px 30px rgba(0,67,212,.20),
+      0 0 24px rgba(0,188,212,.10),
+      inset 0 1px rgba(255,255,255,.16);
+    font-family:inherit;
+    font-size:18px;
+    font-weight:700;
+    line-height:1;
+    color:var(--ink);
+    white-space:nowrap;
+    overflow:hidden;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .btn::before,
+  .nav__cta::before{
+    content:"";
+    position:absolute;
+    top:-60%;
+    left:-38%;
+    width:28%;
+    height:220%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+    opacity:0;
+    transform:translateX(-160%) skewX(-20deg);
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+
+  /* Exported arrows ship with stroke="white"; this keeps them matched to the
+     white --ink label on gradient buttons. */
+  .btn .arrow img,
+  .nav__cta .arrow img{filter:brightness(100);}
+
+  .grad-text{
+    background:var(--grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  /* Figma strokes are inside the frame, so 31px padding + 1px border
+     reproduces Figma's reported 32px padding exactly. */
+  .card{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:8px;
+    padding:31px;
+    display:flex;
+    flex-direction:column;
+    gap:23px;
+  }
+  /* .card--active{border-color:var(--cyan);} */
+
+  .sec-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.24;pointer-events:none;}
+
+  /* ================= HERO ================= */
+  .hero{position:relative;height:987px;}
+
+  .hero__bgwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+  .hero__bg{position:absolute;top:0;left:-11.45%;width:122.9%;height:102.63%;max-width:none;opacity:.25;object-fit:cover;}
+  .hero__fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 65.248%,#0B0F19 100%);pointer-events:none;}
+
+  .ellipse{position:absolute;left:833px;top:315px;width:303px;height:303px;pointer-events:none;}
+  .ellipse img{position:absolute;inset:-20.96%;width:141.92%;height:141.92%;max-width:none;}
+
+  .nav{position:absolute;left:158px;top:32px;width:1126.17px;display:flex;align-items:center;justify-content:space-between;z-index:5;}
+  .nav__logo{width:180px;height:40px;}
+  .nav__logo img{width:100%;height:100%;object-fit:cover;}
+  .nav__right{display:flex;align-items:center;gap:16px;}
+  .nav__phone{font-size:16px;font-weight:700;}
+  .nav__cta{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    display:inline-flex;align-items:center;gap:10px;
+    padding:10px 18px;
+    border:2px solid transparent;
+    border-radius:999px;
+    /* Figma gave this button a one-off gradient (#00BCD4 -> #0043D4) on which
+       no single label colour can pass AA: white fails at the cyan end (2.30:1)
+       and dark ink fails at the blue end (2.51:1). Unified to the named
+       DP-Gradient so the whole button system is consistent. */
+    background:var(--grad);
+    background-size:180% 100%;
+    background-position:0 50%;
+    box-shadow:
+      0 8px 22px rgba(0,67,212,.16),
+      0 0 18px rgba(0,188,212,.08),
+      inset 0 1px rgba(255,255,255,.14);
+    filter:none;
+    font-size:14px;font-weight:800;white-space:nowrap;
+    color:var(--ink);
+  }
+
+  .hero__content{position:absolute;left:157px;top:229px;width:1120px;display:flex;flex-direction:column;gap:144px;z-index:4;}
+
+  .hero__row{display:flex;align-items:center;gap:80px;}
+  .hero__col{flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;}
+
+  .rating{display:flex;align-items:center;gap:24px;}
+  .rating__google{width:73px;height:24px;overflow:hidden;position:relative;flex-shrink:0;}
+  .rating__google img{position:absolute;inset:0;width:100%;height:100%;}
+  .rating__stars{display:flex;gap:4px;}
+  .rating__stars img{width:20px;height:20px;}
+  .rating__text{font-size:16px;line-height:32px;white-space:nowrap;}
+  .rating__text u{text-decoration:underline;}
+
+  .hero h1{font-size:48px;font-weight:900;line-height:1.1;color:var(--accent);}
+  .hero h1 .w{color:#fff;}
+  .hero h1 .c1{color:#3ABCFC;}
+  .hero h1 .c2{color:#39BAFB;}
+
+  .hero__lead{position:relative;z-index:2;display:flex;flex-direction:column;gap:24px;}
+  .hero__lead p{font-size:18px;line-height:32px;color:var(--muted);font-weight:400;}
+  .hero__lead b{font-weight:600;color:#fff;}
+  .hero__lead .sep{color:var(--muted);font-weight:600;}
+  .hero__lead .btn{align-self:flex-start;}
+  .marketing-back-highlight{position:relative;display:inline-block;}
+
+  .hero__media{position:relative;width:456px;height:581px;flex-shrink:0;}
+  .hero__media-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.25;}
+  .hero__person{position:absolute;left:-31px;top:69px;width:518px;height:423px;max-width:none;object-fit:cover;}
+
+  .hero__arrow{
+    position:absolute;
+    left:calc(100% + 16px);
+    top:-100px;
+    bottom:auto;
+    width:380px;
+    height:180px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    opacity:.95;
+    z-index:2;
+  }
+  .hero__arrow-rot{transform:rotate(-35deg);width:360px;height:180px;position:relative;overflow:hidden;}
+  .hero__arrow-rot img{position:absolute;top:18.04%;right:.12%;bottom:18.25%;left:0;width:99.88%;height:63.71%;max-width:none;}
+
+  .hero__usps{display:flex;gap:48px;height:46px;}
+  .usp{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:16px;}
+  .usp img{width:24px;height:24px;flex-shrink:0;}
+  .usp p{flex:1;min-width:0;font-size:16px;font-weight:500;line-height:1.44;}
+
+  /* ================= LOGO MARQUEE ================= */
+  .marquee{
+    position:relative;
+    left:-34px;
+    width:1483px;
+    height:136px;
+    margin-top:157px;
+    overflow:hidden;
+  }
+  .marquee__inner{opacity:.7;display:flex;flex-direction:column;gap:24px;align-items:center;}
+  .marquee__row{
+    width:100%;
+    height:56px;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+  }
+  .marquee__track{
+    position:relative;
+    left:50%;
+    display:flex;
+    width:max-content;
+    transform:translateX(-50%);
+  }
+  .marquee__set{
+    display:flex;
+    align-items:center;
+    gap:24px;
+    padding-right:24px;
+    flex-shrink:0;
+  }
+  .marquee__set > div{height:56px;flex-shrink:0;position:relative;opacity:.8;}
+  .marquee__set > div img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .marquee__set > div.full{opacity:1;}
+
+  .logo-motion-ready .marquee__track{
+    left:0;
+    transform:translateX(0);
+    animation:logo-scroll-left 42s linear infinite;
+    will-change:transform;
+  }
+  .logo-motion-ready .marquee__row--2 .marquee__track{
+    animation-name:logo-scroll-right;
+    animation-duration:48s;
+  }
+  @keyframes logo-scroll-left{
+    to{transform:translate3d(-50%,0,0);}
+  }
+  @keyframes logo-scroll-right{
+    from{transform:translate3d(-50%,0,0);}
+    to{transform:translate3d(0,0,0);}
+  }
+
+  /* ================= PROBLEM + FORM ================= */
+  .problem{position:relative;padding:120px 0;display:flex;justify-content:center;}
+  .problem__inner{width:1120px;display:flex;align-items:center;gap:95px;}
+  .problem__copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:40px;}
+  .problem__heading{position:relative;}
+  .problem__copy h2{font-size:40px;font-weight:900;line-height:1.1;color:#3EC3FD;}
+  .problem__copy h2 .w{color:#fff;}
+  .problem__copy h2 .q{color:var(--cyan);}
+  .marketing-highlight{position:relative;display:inline-block;}
+  .problem__copy .body p{font-size:16px;line-height:1.7;font-weight:400;}
+  .problem__copy .body p.strong{font-weight:600;}
+  .problem__underline{
+    position:absolute;
+    left:-5%;
+    bottom:-13px;
+    width:110%;
+    height:auto;
+    pointer-events:none;
+    transform:rotate(-1deg);
+  }
+  .problem__underline img{width:100%;height:auto;}
+
+  .form-card{
+    flex:1;min-width:0;
+    border:1px solid var(--cyan);
+    border-radius:8px;
+    padding:31px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:23px;
+    overflow:hidden;
+  }
+  .form-card h3{width:100%;font-size:24px;font-weight:900;line-height:1.1;}
+  .form-card__fields{width:100%;display:flex;flex-direction:column;gap:40px;}
+  .field{display:flex;flex-direction:column;gap:15px;}
+  .field label{font-size:16px;font-weight:500;line-height:1;letter-spacing:-0.16px;}
+  .field input{
+    width:100%;height:48px;border:0;border-radius:4px;background:#fff;
+    padding:0 14px;font-family:inherit;font-size:16px;color:#0B0F19;
+  }
+  .form-card .btn{width:100%;justify-content:center;font-size:20px;padding:14px 30px;}
+
+  /* ================= SERVICES ================= */
+  .services{position:relative;padding:120px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+  .services__inner{position:relative;width:1120px;display:flex;flex-direction:column;align-items:center;gap:40px;}
+  .services__head{width:1128px;display:flex;align-items:center;gap:48px;}
+  .services__head h2{width:479px;flex-shrink:0;font-size:40px;font-weight:900;line-height:1.1;}
+  .services__head p{flex:1;min-width:0;font-size:16px;line-height:1.7;}
+
+  .services__grid{width:1128px;display:flex;flex-direction:column;gap:32px;}
+  .services__row{display:flex;align-items:center;gap:32px;}
+  .services__row .card{flex:1;min-width:0;}
+  .icon-box{
+    width:56px;height:56px;border-radius:12px;background:rgba(0,188,212,0.1);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .icon-box span{width:28px;height:28px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .icon-box img{width:25px;height:25px;}
+  .card__text{display:flex;flex-direction:column;gap:16px;}
+  .card__text h3{font-size:20px;font-weight:700;line-height:1.1;}
+  .card__text p{font-size:16px;font-weight:400;line-height:1.7;height:64px;}
+
+  .services__foot{width:100%;display:flex;align-items:flex-end;justify-content:space-between;}
+  .services__foot p{width:705px;font-size:32px;font-weight:800;line-height:1.2;}
+  .services__foot p .w{color:#fff;-webkit-text-fill-color:#fff;}
+
+  /* ================= REAL RESULTS ================= */
+  .results{padding:120px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .results__inner{width:1120px;display:flex;flex-direction:column;align-items:center;gap:40px;}
+  .results__head{width:100%;display:flex;align-items:center;justify-content:center;gap:40px;}
+  .results__head h2{flex:1;min-width:0;font-size:40px;font-weight:900;line-height:1.1;color:#3EC3FD;}
+  .results__head h2 .w{color:#fff;}
+  .results__link{display:flex;align-items:center;gap:16px;flex-shrink:0;font-size:18px;font-weight:500;line-height:1.7;white-space:nowrap;}
+
+  .results__row{width:100%;display:flex;align-items:flex-start;gap:24px;}
+  .results__row .card{flex:1;min-width:0;align-self:stretch;}
+  .case__top{display:flex;flex-direction:column;gap:56px;}
+  .case__stat{display:flex;flex-direction:column;gap:16px;}
+  .case__stat .num{font-size:40px;font-weight:700;line-height:1.1;}
+  .case__stat .label{font-size:20px;font-weight:700;line-height:1.1;height:48px;}
+  .case__client{font-size:16px;font-weight:500;line-height:1.7;white-space:nowrap;}
+  .case__img{width:100%;aspect-ratio:430/280;border-radius:4px;opacity:.9;position:relative;}
+  .case__img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:4px;}
+
+  /* ================= TESTIMONIALS ================= */
+  .testimonials{position:relative;padding:120px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+  .testimonials__inner{position:relative;width:1120px;display:flex;flex-direction:column;align-items:flex-start;gap:24px;}
+  .testimonials__topline{width:100%;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .testimonials__inner > h2{width:100%;font-size:40px;font-weight:900;line-height:1.1;}
+  .testimonials__inner > h2 .w{color:#fff;-webkit-text-fill-color:#fff;}
+  .testimonials__motion-toggle{
+    display:none;
+    min-width:44px;
+    min-height:44px;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    flex-shrink:0;
+    padding:0 14px;
+    border:1px solid var(--hairline);
+    border-radius:999px;
+    background:rgba(0,13,32,.72);
+    color:var(--muted);
+    font:600 13px/1 'Montserrat',sans-serif;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:
+      color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease,
+      background-color var(--motion-fast) ease,
+      transform var(--motion-fast) var(--ease-out);
+  }
+  .testimonial-motion-ready .testimonials__motion-toggle{display:inline-flex;}
+  .testimonials__motion-toggle:active{transform:scale(.97);}
+  .testimonials__motion-toggle:focus-visible{
+    outline:2px solid #fff;
+    outline-offset:3px;
+    border-color:var(--cyan);
+  }
+  .testimonials__motion-icon{position:relative;width:12px;height:14px;color:var(--cyan);flex:0 0 12px;}
+  .testimonials__motion-icon::before,
+  .testimonials__motion-icon::after{
+    content:"";
+    position:absolute;
+    top:1px;
+    width:3px;
+    height:12px;
+    border-radius:2px;
+    background:currentColor;
+  }
+  .testimonials__motion-icon::before{left:1px;}
+  .testimonials__motion-icon::after{right:1px;}
+  .testimonials__motion-toggle.is-paused .testimonials__motion-icon::before{
+    top:1px;
+    left:2px;
+    width:0;
+    height:0;
+    border-top:6px solid transparent;
+    border-bottom:6px solid transparent;
+    border-left:9px solid currentColor;
+    border-radius:0;
+    background:transparent;
+  }
+  .testimonials__motion-toggle.is-paused .testimonials__motion-icon::after{display:none;}
+  .testimonials__viewport{
+    width:100vw;
+    align-self:center;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:8px 0 16px;
+    overscroll-behavior-inline:contain;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 4%,#000 96%,transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 4%,#000 96%,transparent 100%);
+  }
+  .testimonials__viewport::-webkit-scrollbar{display:none;}
+  .testimonials__row{display:flex;align-items:stretch;width:max-content;}
+  .testimonials__set{display:flex;align-items:stretch;gap:24px;padding-right:24px;flex-shrink:0;}
+  .testimonial{
+    width:clamp(320px,40.56vw,584px);
+    min-height:334px;
+    height:auto;
+    flex-shrink:0;
+    scroll-snap-align:start;
+  }
+  .testimonial .quote{width:40px;height:40px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .testimonial .quote img{width:36px;height:36px;}
+  .testimonial p{font-size:16px;font-weight:400;line-height:1.7;}
+  .testimonial .name{margin-top:auto;font-size:18px;font-weight:700;white-space:nowrap;}
+  .testimonial-motion-ready .testimonials__viewport{overflow:hidden;scroll-snap-type:none;}
+  .testimonial-motion-ready .testimonials__row{
+    animation:testimonial-scroll-left 56s linear infinite;
+    animation-delay:-11s;
+    will-change:transform;
+  }
+  .testimonial-motion-ready .testimonials__viewport.is-paused .testimonials__row,
+  .testimonial-motion-ready .testimonials__viewport.is-offscreen .testimonials__row{animation-play-state:paused;}
+  @media (hover:hover) and (pointer:fine){
+    .testimonials__motion-toggle:hover{
+      color:#fff;
+      border-color:rgba(0,188,212,.56);
+      background:rgba(0,188,212,.10);
+      transform:translateY(-1px);
+    }
+    .testimonial-motion-ready .testimonials__viewport:hover .testimonials__row{animation-play-state:paused;}
+  }
+  @keyframes testimonial-scroll-left{
+    to{transform:translate3d(-33.333333%,0,0);}
+  }
+
+  /* ================= FAQ ================= */
+  /* 22px of page background shows between the testimonials block and the FAQ in the Figma frame */
+  .faq{margin-top:22px;padding:120px;display:flex;flex-direction:column;align-items:center;}
+  .faq__inner{width:1120px;display:flex;flex-direction:column;gap:24px;}
+  .faq__inner > h2{margin-bottom:16px;font-size:40px;font-weight:900;line-height:1.1;}
+  .faq__list{display:flex;flex-direction:column;gap:24px;}
+  .faq__item summary{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;cursor:pointer;}
+  .faq__item summary::-webkit-details-marker{display:none;}
+  .faq__item summary h3{flex:1;min-width:0;font-size:20px;font-weight:700;line-height:1.1;}
+  .faq__item summary img{width:20px;height:20px;flex-shrink:0;}
+  .faq__item p{font-size:16px;font-weight:400;line-height:1.7;}
+
+  /* ================= FINAL CTA ================= */
+  .final{position:relative;padding:120px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;overflow:hidden;}
+  .final__inner{position:relative;width:789px;display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;}
+  .final__inner h2{width:100%;font-size:48px;font-weight:900;line-height:1.1;}
+  .final__underline{width:348px;height:20px;}
+  .final__underline img{width:100%;height:100%;}
+  .final__inner > p{width:100%;font-size:16px;font-weight:400;line-height:1.7;}
+
+  /* ================= FOOTER ================= */
+  .footer{padding:80px 0 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .footer__inner{width:1120px;display:flex;flex-direction:column;gap:40px;}
+  .footer__top{display:flex;align-items:flex-end;justify-content:space-between;}
+  .footer__brand{width:415px;display:flex;flex-direction:column;justify-content:center;gap:24px;}
+  .footer__brand .logo{width:180px;height:40px;position:relative;}
+  .footer__brand .logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .footer__brand p{font-size:16px;font-weight:400;line-height:1.7;}
+  .footer__contact{display:flex;flex-direction:column;justify-content:center;gap:16px;}
+  .footer__contact div{display:flex;align-items:center;gap:16px;}
+  .footer__contact img{width:24px;height:24px;flex-shrink:0;}
+  .footer__contact p{font-size:16px;font-weight:400;white-space:nowrap;}
+  .footer__bottom{display:flex;flex-direction:column;gap:24px;}
+  .footer__rule{width:100%;height:0;position:relative;}
+  .footer__rule img{width:100%;height:1px;}
+  .footer__legal{height:19px;display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:400;white-space:nowrap;}
+  .footer__legal nav{display:flex;gap:24px;}
+
+  /* ================================================================
+     RESPONSIVE FOUNDATION
+     Everything above is the approved 1440 design and stays the source of
+     truth. Every token below has a ceiling equal to its 1440 value, so the
+     desktop rendering is unchanged and only narrower viewports interpolate.
+     Type is in rem so browser text-resize works (WCAG 1.4.4).
+     ================================================================ */
+  :root{
+    --gutter:clamp(16px,4vw,64px);
+    --pad-y:clamp(4rem,3rem + 5vw,7.5rem);   /* 64 -> 120px at 1440 */
+    --container:1120px;
+  }
+
+  .page{width:100%;max-width:none;}
+
+  /* fluid display type — each resolves to its exact Figma size at 1440 */
+  .hero h1{font-size:clamp(2rem,1.71429rem + 1.42857vw,3rem);}                 /* 32 -> 48 */
+  .problem__copy h2,
+  .services__head h2,
+  .results__head h2,
+  .testimonials__inner > h2,
+  .faq__inner > h2{font-size:clamp(1.75rem,1.53571rem + 1.07143vw,2.5rem);}    /* 28 -> 40 */
+  .final__inner h2{font-size:clamp(1.875rem,1.55357rem + 1.60714vw,3rem);}     /* 30 -> 48 */
+  .services__foot p{font-size:clamp(1.375rem,1.19643rem + 0.89286vw,2rem);}    /* 22 -> 32 */
+  .case__stat .num{font-size:clamp(1.875rem,1.69643rem + 0.89286vw,2.5rem);}   /* 30 -> 40 */
+  .form-card h3{font-size:clamp(1.25rem,1.17857rem + 0.35714vw,1.5rem);}       /* 20 -> 24 */
+
+  /* fluid section rhythm + gutters (inner containers stay centred at 1440) */
+  .problem,.results{padding:var(--pad-y) var(--gutter);}
+  .services,.testimonials,.final{padding:var(--pad-y) var(--gutter);}
+  .faq{padding:var(--pad-y) var(--gutter);}
+  .footer{padding:80px var(--gutter) 24px;}
+
+  /* fluid containers */
+  .problem__inner,
+  .results__inner,
+  .testimonials__inner,
+  .faq__inner,
+  .footer__inner{width:min(var(--container),100%);}
+  .services__inner{width:min(var(--container),100%);}
+  .services__head,.services__grid{width:100%;}
+  .final__inner{width:min(789px,100%);}
+
+  /* ================================================================
+     LAYOUT TIERS
+     The 1440 design remains the baseline. Wider tiers expand useful
+     content selectively while backgrounds continue edge to edge.
+     ================================================================ */
+
+  /* ---------- >=1440 : centre the Figma composition in the viewport ---------- */
+  @media (min-width:1440px){
+    .nav,
+    .hero__content{
+      left:50%;
+      transform:translateX(-50%);
+      width:var(--container);
+    }
+
+    .ellipse{left:calc(50% + 113px);}
+
+    .marquee{
+      left:50%;
+      width:min(1483px,100vw);
+      transform:translateX(-50%);
+    }
+  }
+
+  /* ---------- >=1600 : large desktop ---------- */
+  @media (min-width:1600px){
+    :root{
+      --container:1240px;
+      --pad-y:132px;
+    }
+
+    .hero{height:1060px;}
+    .hero__content{top:210px;gap:132px;}
+    .hero__row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 500px;
+      gap:110px;
+    }
+    .hero__col{max-width:650px;}
+    .hero__media{width:500px;height:auto;aspect-ratio:456/581;}
+    .hero__person{left:-6.798%;top:11.876%;width:113.596%;height:72.806%;}
+    .hero h1{font-size:52px;}
+    .ellipse{left:calc(50% + 150px);top:330px;}
+    .hero__arrow{left:calc(100% + 16px);top:-96px;width:300px;height:180px;}
+    .hero__arrow-rot{width:280px;height:180px;}
+
+    .problem__inner{gap:120px;}
+    .problem__copy{max-width:570px;}
+    .form-card{max-width:550px;}
+
+    .services__head{gap:72px;}
+    .services__head p{max-width:670px;}
+    .services__foot p{width:min(800px,68%);}
+
+    .results__row{gap:32px;}
+    .card{padding:35px;}
+
+    .faq__inner{width:min(1120px,100%);}
+    .final__inner{width:min(860px,100%);}
+  }
+
+  /* ---------- >=1920 : wide desktop ---------- */
+  @media (min-width:1920px){
+    :root{
+      --container:1360px;
+      --pad-y:144px;
+    }
+
+    .hero{height:1120px;}
+    .hero__content{top:220px;gap:144px;}
+    .hero__row{
+      grid-template-columns:minmax(0,1fr) 540px;
+      gap:140px;
+    }
+    .hero__col{max-width:680px;}
+    .hero__media{width:540px;}
+    .hero h1{font-size:56px;}
+    .hero__lead{max-width:650px;}
+    .ellipse{left:calc(50% + 180px);top:350px;}
+    .hero__arrow{left:calc(100% + 16px);top:-94px;width:280px;height:180px;}
+    .hero__arrow-rot{width:260px;height:180px;}
+
+    .problem__inner{gap:144px;}
+    .services__row{gap:40px;}
+    .results__row{gap:36px;}
+    .card{padding:39px;}
+  }
+
+  /* ---------- >=2560 : ultra-wide; content stops growing ---------- */
+  @media (min-width:2560px){
+    :root{
+      --container:1440px;
+      --pad-y:160px;
+    }
+
+    .hero__row{grid-template-columns:minmax(0,1fr) 560px;gap:160px;}
+    .hero__media{width:560px;}
+    .hero__col{max-width:700px;}
+  }
+
+  /* ---------- <=1439 : hero leaves absolute positioning, media goes fluid ---------- */
+  @media (max-width:1439.98px){
+    .hero{height:auto;display:flex;flex-direction:column;padding:32px var(--gutter) 0;}
+    .nav{position:relative;left:auto;top:auto;width:100%;}
+    .hero__content{
+      position:relative;left:auto;top:auto;width:100%;
+      margin-top:clamp(56px,10vw,157px);
+      gap:clamp(56px,10vw,144px);
+    }
+    .ellipse{display:none;}                    /* glow is baked into the hero art */
+    .marquee{
+      left:0;
+      width:100%;
+      margin-top:clamp(56px,10vw,144px);
+    }
+
+    /* hero media scales as one composition (person keeps its overhang) */
+    .hero__media{width:min(456px,42%);height:auto;aspect-ratio:456/581;}
+    .hero__person{left:-6.798%;top:11.876%;width:113.596%;height:72.806%;}
+
+    /* release fixed heights so wrapped text can never clip */
+    .card__text p{height:auto;}
+    .case__stat .label{height:auto;}
+    .testimonial,.t1,.t2,.t4{height:auto;}
+
+    /* Keep the squiggle compact while the hero composition is still fluid. */
+    .hero__arrow{left:calc(100% + 16px);top:-100px;width:380px;height:180px;}
+    .hero__arrow-rot{width:360px;height:180px;}
+  }
+
+  /* ---------- <=1199 : testimonials stack, hero arrow retires ---------- */
+  @media (max-width:1199.98px){
+    .hero__arrow{display:none;}
+
+    .marquee{position:static;left:auto;width:100%;height:136px;}
+    .marquee__inner{opacity:.7;}
+
+  }
+
+  /* ---------- <=1023 : hero stacks, problem/form stacks, results 3->2 ---------- */
+  @media (max-width:1023.98px){
+    .hero__row{flex-direction:column;align-items:flex-start;gap:48px;}
+    .hero__col{width:100%;}
+    .hero__media{width:min(456px,100%);align-self:center;}
+
+    .problem__inner{flex-direction:column;align-items:stretch;gap:48px;}
+
+    .results__row{flex-wrap:wrap;}
+    .results__row .card{flex:1 1 calc(50% - 12px);min-width:260px;}
+
+    .services__head{flex-direction:column;align-items:flex-start;gap:24px;}
+    .services__head h2{width:auto;}
+
+    .services__foot{flex-direction:column;align-items:flex-start;gap:32px;}
+    .services__foot p{width:100%;}
+  }
+
+  /* ---------- <=767 : single column, nav and footer stack ---------- */
+  @media (max-width:767.98px){
+    .nav{flex-wrap:wrap;gap:16px;}
+    .nav__right{gap:12px;}
+
+    .hero__usps{flex-direction:column;height:auto;gap:16px;}
+    .usp{justify-content:flex-start;}
+
+    .services__row{flex-direction:column;}
+
+    .results__head{flex-direction:column;align-items:flex-start;gap:16px;}
+    .results__head h2{width:100%;}
+
+    .footer__top{flex-direction:column;align-items:flex-start;gap:40px;}
+    .footer__brand{width:100%;}
+    .footer__legal{height:auto;flex-direction:column;align-items:flex-start;gap:16px;white-space:normal;}
+    .footer__contact p{white-space:normal;}
+  }
+
+  /* ---------- <=639 : results single column ---------- */
+  @media (max-width:639.98px){
+    .results__row{flex-direction:column;}
+    .results__row .card{flex:1 1 auto;min-width:0;}
+  }
+
+  /* ---------- <=559 : thumb-first ---------- */
+  @media (max-width:559.98px){
+    .nav{flex-direction:column;align-items:stretch;}
+    .nav__right{flex-direction:column;align-items:stretch;}
+    .nav__cta{justify-content:center;}
+
+    .btn{width:100%;justify-content:center;white-space:normal;text-align:center;}
+    .hero__lead .btn{align-self:stretch;}
+
+    .rating{flex-wrap:wrap;gap:12px;}
+    .rating__text{white-space:normal;}
+
+    .card,.form-card{padding:23px;}
+    .case__client{white-space:normal;}
+    .results__link{white-space:normal;}
+
+    .testimonials__topline{align-items:flex-start;}
+    .testimonials__motion-toggle{padding:0 12px;}
+    .testimonials__viewport{
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 2%,#000 98%,transparent 100%);
+      mask-image:linear-gradient(90deg,transparent 0,#000 2%,#000 98%,transparent 100%);
+    }
+    .testimonial{width:min(86vw,340px);min-height:0;}
+  }
+
+  /* ================================================================
+     INTERACTION, FOCUS & TAP TARGETS
+     ================================================================ */
+
+  /* Native <details> accordion — no JavaScript. The exported plus icon
+     rotates 45deg into a close (x) glyph, so no second asset is needed. */
+  html{scroll-behavior:smooth;}
+
+  /* Motion language: fast feedback, calm entrances, and slow ambient depth. */
+  .btn,
+  .nav__cta{
+    transition:
+      transform var(--motion-fast) var(--ease-standard),
+      filter var(--motion-fast) ease,
+      box-shadow 240ms var(--ease-out),
+      background-position var(--motion-medium) var(--ease-out);
+    will-change:transform;
+  }
+  .btn .arrow,
+  .nav__cta .arrow{
+    transition:
+      transform var(--motion-fast) var(--ease-out),
+      opacity var(--motion-fast) ease;
+  }
+
+  .card{
+    transition:
+      transform var(--motion-medium) var(--ease-out),
+      border-color var(--motion-medium) ease,
+      background-color var(--motion-medium) ease;
+  }
+  .icon-box,
+  .icon-box img,
+  .case__img img,
+  .nav__logo,
+  .footer__brand .logo,
+  .marquee__set > div{
+    transition:
+      transform var(--motion-medium) var(--ease-out),
+      opacity var(--motion-medium) ease,
+      filter var(--motion-medium) ease;
+  }
+  .case__img{overflow:hidden;}
+  .field input{
+    transition:
+      box-shadow var(--motion-fast) ease,
+      transform var(--motion-fast) var(--ease-out);
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .btn:hover,
+    .nav__cta:hover{
+      transform:translateY(-3px) scale(1.015);
+      filter:brightness(1.08) saturate(1.08);
+      background-position:100% 50%;
+      box-shadow:
+        0 18px 44px rgba(0,67,212,.34),
+        0 0 40px rgba(0,188,212,.24),
+        inset 0 1px rgba(255,255,255,.22);
+    }
+    .btn:hover::before,
+    .nav__cta:hover::before{animation:cta-sheen 560ms var(--ease-out) both;}
+    .btn:hover .arrow,
+    .nav__cta:hover .arrow{transform:translateX(5px);}
+
+    .card:hover{
+      transform:translateY(-6px);
+      border-color:rgba(0,188,212,.62);
+      background:#021229;
+    }
+    .card:hover .icon-box{transform:scale(1.06) rotate(-2deg);}
+    .card:hover .icon-box img{transform:scale(1.08);}
+    .results__row .card:hover .case__img img{transform:scale(1.035);}
+
+    .nav__logo:hover,
+    .footer__brand .logo:hover{transform:translateY(-2px);}
+    .marquee__row:hover .marquee__track{animation-play-state:paused;}
+    .marquee__set > div:hover{opacity:1;transform:translateY(-3px);}
+
+    .motion-ready .reveal.card.is-visible:hover{transform:translateY(-6px);}
+  }
+
+  .btn:active,
+  .nav__cta:active{
+    transform:translateY(0) scale(.98);
+    box-shadow:
+      0 5px 14px rgba(0,67,212,.18),
+      0 0 12px rgba(0,188,212,.10),
+      inset 0 1px rgba(255,255,255,.14);
+  }
+  .btn:focus-visible,
+  .nav__cta:focus-visible{
+    outline:3px solid #fff;
+    outline-offset:4px;
+    box-shadow:
+      0 0 0 7px rgba(0,188,212,.30),
+      0 14px 34px rgba(0,67,212,.28);
+  }
+  .btn:disabled,
+  .btn[aria-disabled="true"],
+  .nav__cta[aria-disabled="true"]{
+    opacity:.55;
+    cursor:not-allowed;
+    pointer-events:none;
+    transform:none;
+    filter:none;
+    box-shadow:none;
+  }
+  .btn[aria-busy="true"]{cursor:wait;pointer-events:none;}
+  .btn[aria-busy="true"]::before{animation:none;opacity:0;}
+  .btn[aria-busy="true"] .arrow{
+    width:14px;
+    height:14px;
+    border:2px solid rgba(255,255,255,.42);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:cta-spinner 680ms linear infinite;
+  }
+  .btn[aria-busy="true"] .arrow img{opacity:0;}
+
+  .floating-cta-bar{
+    position:fixed;
+    left:50%;
+    width:min(1520px,calc(100% - 40px));
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    z-index:40;
+    overflow:hidden;
+    background:
+      linear-gradient(110deg,rgba(0,13,32,.988),rgba(0,7,18,.988));
+    border:1px solid rgba(255,255,255,.11);
+    border-top-color:rgba(255,255,255,.24);
+    border-radius:16px;
+    box-shadow:
+      0 18px 54px rgba(0,0,0,.42),
+      0 10px 36px rgba(0,67,212,.18),
+      inset 0 1px rgba(255,255,255,.04);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translate3d(-50%,calc(100% + 32px),0);
+    transition:
+      opacity 240ms ease,
+      transform var(--motion-medium) var(--ease-out),
+      visibility 0s linear var(--motion-medium);
+  }
+  .floating-cta-bar.is-visible{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:translate3d(-50%,0,0);
+    transition-delay:0s;
+  }
+  .floating-cta-bar__inner{
+    width:min(var(--container),calc(100% - 80px));
+    min-height:80px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+    padding:12px 0;
+  }
+  .floating-cta-bar__message{
+    flex:1;
+    min-width:0;
+    font-size:15px;
+    font-weight:700;
+    line-height:1.2;
+  }
+  .floating-cta-bar__message strong,
+  .floating-cta-bar__message span{display:block;}
+  .floating-cta-bar__message span{
+    margin-top:4px;
+    color:var(--cyan);
+    font-size:14px;
+    font-weight:600;
+  }
+  .floating-cta-bar__actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:16px;
+    flex-shrink:0;
+  }
+  .floating-cta-bar__phone{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:44px;
+    font-size:14px;
+    font-weight:500;
+    white-space:nowrap;
+    transition:
+      color var(--motion-fast) ease,
+      transform var(--motion-fast) var(--ease-out);
+  }
+  .floating-cta-bar__phone img{width:20px;height:20px;}
+  .floating-cta-bar__button{
+    width:auto;
+    padding:14px 24px;
+    font-size:16px;
+    white-space:nowrap;
+  }
+  .floating-cta-bar__button:is(:focus-visible,:active){animation:none !important;}
+  .floating-cta-bar__dismiss{
+    display:inline-grid;
+    place-items:center;
+    width:44px;
+    height:44px;
+    flex:0 0 44px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:50%;
+    background:rgba(255,255,255,.055);
+    color:rgba(255,255,255,.76);
+    font:500 24px/1 Arial,sans-serif;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:
+      color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease,
+      background-color var(--motion-fast) ease,
+      transform var(--motion-fast) var(--ease-out);
+  }
+  .floating-cta-bar__dismiss:active{transform:scale(.94);}
+  .floating-cta-bar__dismiss:focus-visible{
+    outline:2px solid #fff;
+    outline-offset:3px;
+    border-color:var(--cyan);
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .floating-cta-bar__phone:hover{color:var(--cyan);transform:translateY(-2px);}
+    .floating-cta-bar__dismiss:hover{
+      color:#fff;
+      border-color:rgba(0,188,212,.62);
+      background:rgba(0,188,212,.12);
+      transform:rotate(4deg);
+    }
+  }
+
+  @media (max-width:1023.98px){
+    .floating-cta-bar{
+      width:calc(100% - 24px);
+      bottom:calc(12px + env(safe-area-inset-bottom));
+      border-radius:14px;
+    }
+    .floating-cta-bar__inner{
+      width:calc(100% - 32px);
+      min-height:66px;
+      gap:24px;
+      padding:10px 0;
+    }
+    .floating-cta-bar__message{font-size:14px;}
+    .floating-cta-bar__message span{display:none;}
+    .floating-cta-bar__actions{width:auto;gap:8px;}
+    .floating-cta-bar__phone{display:none;}
+    .floating-cta-bar__button{
+      width:auto;
+      flex:0 0 auto;
+      justify-content:center;
+      padding:14px 20px;
+      font-size:14px;
+    }
+  }
+  @media (max-width:639.98px){
+    .floating-cta-bar{
+      width:calc(100% - 16px);
+      bottom:calc(8px + env(safe-area-inset-bottom));
+    }
+    .floating-cta-bar__inner{
+      width:100%;
+      gap:0;
+      padding:10px;
+    }
+    .floating-cta-bar__message{display:none;}
+    .floating-cta-bar__actions{width:100%;}
+    .floating-cta-bar__button{
+      min-width:0;
+      flex:1;
+      padding:14px;
+    }
+  }
+  @media (max-width:359.98px){
+    .floating-cta-bar__inner{padding:8px;}
+    .floating-cta-bar__button{gap:8px;padding:13px 10px;font-size:13px;}
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .floating-cta-bar.is-visible .floating-cta-bar__button{
+      animation:cta-glow-pulse 2.4s ease-in-out infinite;
+    }
+  }
+
+  .footer{padding-bottom:128px;}
+  @media (max-width:1023.98px){
+    .footer{padding-bottom:112px;}
+  }
+
+  .field input:focus{
+    box-shadow:0 0 0 4px rgba(0,188,212,.14);
+    transform:translateY(-1px);
+  }
+
+  /* CTA motion: a quick sheen on intent plus a continuous breathing glow on
+     the two primary conversion actions. */
+  @keyframes cta-sheen{
+    0%{opacity:0;transform:translateX(-160%) skewX(-20deg);}
+    24%{opacity:.9;}
+    100%{opacity:0;transform:translateX(620%) skewX(-20deg);}
+  }
+  @keyframes cta-glow-pulse{
+    0%,100%{
+      box-shadow:
+        0 12px 30px rgba(0,67,212,.20),
+        0 0 24px rgba(0,188,212,.10),
+        inset 0 1px rgba(255,255,255,.16);
+    }
+    50%{
+      box-shadow:
+        0 18px 44px rgba(0,67,212,.36),
+        0 0 46px rgba(0,188,212,.28),
+        inset 0 1px rgba(255,255,255,.24);
+    }
+  }
+  @keyframes cta-spinner{to{transform:rotate(1turn);}}
+  @keyframes hero-enter{
+    from{opacity:0;transform:translateY(22px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes hero-media-enter{
+    from{opacity:0;transform:translate3d(28px,10px,0) scale(.97);}
+    to{opacity:1;transform:translate3d(0,0,0) scale(1);}
+  }
+  @keyframes ambient-drift{
+    0%,100%{transform:scale(1.01) translate3d(0,0,0);}
+    50%{transform:scale(1.035) translate3d(-6px,-4px,0);}
+  }
+  @keyframes ambient-pulse{
+    0%,100%{transform:scale(1);opacity:.82;}
+    50%{transform:scale(1.045);opacity:1;}
+  }
+  @keyframes sketch-draw{
+    from{clip-path:inset(0 100% 0 0);opacity:0;}
+    to{clip-path:inset(0 0 0 0);opacity:1;}
+  }
+
+  .nav__logo{animation:hero-enter var(--motion-slow) var(--ease-out) both;}
+  .nav__right{animation:hero-enter var(--motion-slow) .08s var(--ease-out) both;}
+  .hero__col .rating{animation:hero-enter var(--motion-slow) .08s var(--ease-out) both;}
+  .hero h1{animation:hero-enter var(--motion-slow) .16s var(--ease-out) both;}
+  .hero__lead{animation:hero-enter var(--motion-slow) .24s var(--ease-out) both;}
+  .hero__media{animation:hero-media-enter 900ms .18s var(--ease-out) both;}
+  .hero__usps{animation:hero-enter var(--motion-slow) .38s var(--ease-out) both;}
+  .hero__media-bg{animation:ambient-drift 9s 1.2s ease-in-out infinite;}
+  .ellipse img{animation:ambient-pulse 6s 1s ease-in-out infinite;}
+  .hero__arrow-rot img{animation:sketch-draw 900ms .52s var(--ease-out) both;}
+  .hero .btn--featured::before{animation:cta-sheen 600ms 1.55s 1 var(--ease-out) both;}
+  @media (hover:hover) and (pointer:fine){
+    .hero .btn--featured:hover::before{
+      animation:cta-sheen 560ms var(--ease-out) both;
+    }
+  }
+  .btn--featured:focus-visible,
+  .btn--featured:active,
+  .btn--featured[aria-disabled="true"],
+  .btn--featured[aria-busy="true"]{animation:none !important;}
+
+  @media (prefers-reduced-motion:no-preference){
+    .hero .btn--featured{
+      animation:cta-glow-pulse 2.4s ease-in-out infinite;
+    }
+    .final .btn--featured{
+      animation:cta-glow-pulse 2.4s ease-in-out infinite;
+    }
+  }
+
+  .motion-ready .problem__copy.reveal .problem__underline img{
+    clip-path:inset(0 100% 0 0);
+    opacity:0;
+  }
+  .motion-ready .problem__copy.reveal.is-visible .problem__underline img{
+    animation:sketch-draw 820ms .28s var(--ease-out) both;
+  }
+
+  /* Progressive enhancement: content is hidden only after the observer
+     declares itself ready, so a script failure cannot hide page content. */
+  .motion-ready .reveal{
+    opacity:0;
+    transform:translateY(26px);
+    transition:
+      opacity var(--motion-slow) var(--ease-out),
+      transform var(--motion-slow) var(--ease-out);
+    transition-delay:var(--reveal-delay,0ms);
+  }
+  .motion-ready .reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .motion-ready .btn--featured.reveal.is-visible{
+      animation:cta-glow-pulse 2.4s ease-in-out infinite;
+    }
+  }
+
+  .faq__item{padding:0;gap:0;overflow:hidden;}
+  .faq__item summary{
+    width:100%;
+    min-height:84px;
+    padding:31px;
+    cursor:pointer;
+    touch-action:manipulation;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:
+      background-color var(--motion-fast) ease,
+      color var(--motion-fast) ease;
+  }
+  .faq__item summary::marker{content:"";}
+  .faq__item summary h3,
+  .faq__item summary img{pointer-events:none;}
+  .faq__item summary img{transition:transform var(--motion-medium) var(--ease-out);}
+  .faq__item > p{padding:32px 31px 31px;}
+  .faq__item[open] summary{background:rgba(0,188,212,.055);}
+  .faq__item[open] summary img{transform:rotate(45deg);}
+  .faq__item[open] > p{animation:hero-enter var(--motion-medium) var(--ease-out) both;}
+  .faq__item summary:active{background:rgba(0,188,212,.11);}
+  .faq__item summary:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:-4px;
+    border-radius:6px;
+  }
+  @media (hover:hover) and (pointer:fine){
+    .faq__item summary:hover{background:rgba(0,188,212,.075);}
+  }
+  @media (max-width:559.98px){
+    .faq__item summary{min-height:68px;padding:23px;}
+    .faq__item > p{padding:0 23px 23px;}
+  }
+
+  /* Skip to content (WCAG 2.4.1) */
+  .skip-link{
+    position:absolute;left:16px;top:-64px;z-index:100;
+    background:var(--cyan);color:#0B0F19;
+    padding:14px 22px;border-radius:0 0 8px 8px;
+    font-size:16px;font-weight:700;
+  }
+  .skip-link:focus{top:0;}
+
+  /* Visible keyboard focus (WCAG 2.4.7) */
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px;}
+  .field input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *,
+    *::before,
+    *::after{
+      animation-duration:.01ms !important;
+      animation-delay:0ms !important;
+      animation-iteration-count:1 !important;
+      scroll-behavior:auto !important;
+      transition-duration:.01ms !important;
+      transition-delay:0ms !important;
+    }
+    .motion-ready .reveal{opacity:1;transform:none;}
+    .marquee{height:auto;}
+    .marquee__inner{gap:16px;}
+    .marquee__row{
+      height:auto;
+      overflow:visible;
+      -webkit-mask-image:none;
+      mask-image:none;
+    }
+    .marquee__track{left:0;width:100%;transform:none;}
+    .marquee__set{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(88px,1fr));
+      gap:12px 16px;
+      width:100%;
+      padding-right:0;
+    }
+    .marquee__set > div{width:100% !important;max-width:149px;justify-self:center;}
+    .marquee__set > div img{object-fit:contain;}
+
+    .testimonials__motion-toggle{display:none !important;}
+    .testimonials__viewport{
+      width:100%;
+      overflow:visible;
+      padding:0;
+      -webkit-mask-image:none;
+      mask-image:none;
+    }
+    .testimonials__row{width:100%;transform:none;}
+    .testimonials__set{
+      width:100%;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:24px;
+      padding-right:0;
+    }
+    .testimonial{width:100%;min-height:0;}
+  }
+  @media (prefers-reduced-motion:reduce) and (max-width:639.98px){
+    .testimonials__set{grid-template-columns:1fr;}
+  }
+
+  /* Comfortable touch targets on touch-sized viewports (desktop design
+     spacing is left exactly as drawn). */
+  @media (max-width:1023.98px){
+    .nav__cta{padding:13px 18px;}          /* -> 44px tall */
+    .faq__item summary{min-height:44px;}
+    .footer__legal a,
+    .footer__contact a{display:inline-flex;align-items:center;min-height:44px;}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="page">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="hero__bgwrap">
+      <img class="hero__bg" src="assets/bg-wireframe.webp" alt="">
+    </div>
+    <div class="hero__fade"></div>
+
+    <div class="ellipse"><img src="assets/ellipse.svg" alt="" loading="lazy" decoding="async"></div>
+
+    <header class="nav">
+      <a href="#" class="nav__logo"><img src="assets/logo.webp" alt="Design Point" loading="lazy" decoding="async"></a>
+      <div class="nav__right">
+        <a class="nav__phone" href="tel:1300123456">1300 123 456</a>
+      </div>
+    </header>
+
+    <div class="hero__content">
+      <div class="hero__row">
+        <div class="hero__col">
+          <div class="rating">
+            <div class="rating__google"><img src="assets/google.svg" alt="Google" loading="lazy" decoding="async"></div>
+            <div class="rating__stars">
+              <img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async">
+            </div>
+            <p class="rating__text">5.0 | 31 <u>reviews</u></p>
+          </div>
+
+          <h1><span class="c1">We Design</span><span class="w"> High-Performance </span><span class="c2">Websites</span><span class="w"> That Perform and Convert</span>—Not Just Look Good.</h1>
+
+          <div class="hero__lead">
+            <div>
+              <p><b>Backed by 12+ years of experience</b><span class="sep">,</span> our Melbourne-based team creates fast, secure, and powerful websites engineered for scalable, long-term growth.</p>
+              <p>&nbsp;</p>
+              <p><b>Stop letting a clunky build hold your <span class="marketing-back-highlight">marketing back<span class="hero__arrow" aria-hidden="true"><span class="hero__arrow-rot"><img src="assets/arrow-curve.svg" alt="" loading="lazy" decoding="async"></span></span></span>.</b></p>
+            </div>
+            <a class="btn btn--featured" href="#quote">Get a free website proposal <span class="arrow"><img src="assets/arrow-hero.svg" alt="" loading="lazy" decoding="async"></span></a>
+          </div>
+        </div>
+
+        <div class="hero__media">
+          <img class="hero__media-bg" src="assets/hero-right-bg.webp" alt="">
+          <img class="hero__person" fetchpriority="high" decoding="async" src="assets/hero-person.webp" alt="Design Point team member">
+        </div>
+      </div>
+
+      <div class="hero__usps">
+        <div class="usp"><img src="assets/check-circle.svg" alt="" loading="lazy" decoding="async"><p>Fast, secure &amp; powerful websites that’s optimized to convert</p></div>
+        <div class="usp"><img src="assets/check-circle.svg" alt="" loading="lazy" decoding="async"><p>Custom developed solutions for your business needs</p></div>
+        <div class="usp"><img src="assets/check-circle.svg" alt="" loading="lazy" decoding="async"><p>Direct access to expert top-level senior  developers</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOGO MARQUEE ================= -->
+  <section class="marquee" aria-label="Client logos">
+    <div class="marquee__inner">
+      <div class="marquee__row">
+        <div class="marquee__track">
+          <div class="marquee__set">
+            <div class="full" style="width:108px"><img src="assets/logo-01.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-02.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-03.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-04.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-05.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-06.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:108px"><img src="assets/logo-07.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:110px"><img src="assets/logo-08.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:114px"><img src="assets/logo-09.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-10.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:149px"><img src="assets/logo-11.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-12.webp" alt="" loading="lazy" decoding="async"></div>
+          </div>
+        </div>
+      </div>
+      <div class="marquee__row marquee__row--2">
+        <div class="marquee__track">
+          <div class="marquee__set">
+            <div style="width:112px"><img src="assets/logo-13.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-14.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:90px"><img src="assets/logo-15.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:89px"><img src="assets/logo-16.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:99px"><img src="assets/logo-17.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-18.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:114px"><img src="assets/logo-19.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-20.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:105px"><img src="assets/logo-21.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:108px"><img src="assets/logo-22.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-23.webp" alt="" loading="lazy" decoding="async"></div>
+            <div style="width:112px"><img src="assets/logo-24.webp" alt="" loading="lazy" decoding="async"></div>
+            <div class="full" style="width:116px"><img src="assets/logo-25.webp" alt="" loading="lazy" decoding="async"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main id="main">
+
+  <!-- ================= PROBLEM + FORM ================= -->
+  <section class="problem" id="quote">
+    <div class="problem__inner">
+      <div class="problem__copy">
+        <div class="problem__heading">
+          <h2>Is your current website <span class="w">holding your <span class="marketing-highlight">marketing<span class="problem__underline" aria-hidden="true"><img src="assets/underline.svg" alt="" loading="lazy" decoding="async"></span></span> back</span><span class="q">?</span></h2>
+        </div>
+        <div class="body">
+          <p>Cheap web development costs more long-term. If your online presence has an outdated aesthetic, a clunky backend, or slow loading speeds, you are actively losing customers to your competitors.</p>
+          <p>&nbsp;</p>
+          <p class="strong">You don't just need a digital brochure; you need the ultimate online sales tool.</p>
+        </div>
+      </div>
+
+      <form class="form-card" onsubmit="return false;">
+        <h3>Let’s get your website going!</h3>
+        <div class="form-card__fields">
+          <div class="field">
+            <label for="fullname">Full name*</label>
+            <input id="fullname" name="fullname" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="email">Email Address*</label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone Number*</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+          </div>
+        </div>
+        <button class="btn" type="submit">Get a free audit <span class="arrow"><img src="assets/arrow-hero.svg" alt="" loading="lazy" decoding="async"></span></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section class="services">
+    <img class="sec-bg" src="assets/bg-wireframe.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="services__inner">
+      <div class="services__head">
+        <h2><span class="grad-text">Web Design, The Way</span> It Should Be Done.</h2>
+        <p>We combine exceptional UX design, clean coding practices, and data-driven conversion elements to capture your audience’s full attention.</p>
+      </div>
+
+      <div class="services__grid">
+        <div class="services__row">
+          <article class="card">
+            <div class="icon-box"><span><img src="assets/icon-code.svg" alt="" loading="lazy" decoding="async"></span></div>
+            <div class="card__text">
+              <h3>Custom WordPress &amp; Shopify</h3>
+              <p>Flexible, scalable, and easy-to-use platforms.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="icon-box"><span><img src="assets/icon-window.svg" alt="" loading="lazy" decoding="async"></span></div>
+            <div class="card__text">
+              <h3>UX/UI Focus</h3>
+              <p>Captivating designs that drive customers through your sales funnel.</p>
+            </div>
+          </article>
+        </div>
+        <div class="services__row">
+          <article class="card">
+            <div class="icon-box"><span><img src="assets/icon-layout.svg" alt="" loading="lazy" decoding="async"></span></div>
+            <div class="card__text">
+              <h3>Built for Growth</h3>
+              <p>Integrated digital marketing and SEO to drive sustainable, long-term traffic.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="icon-box"><span><img src="assets/icon-zap.svg" alt="" loading="lazy" decoding="async"></span></div>
+            <div class="card__text">
+              <h3>100% Ownership</h3>
+              <p>Fully mobile-friendly, responsive, and 100% owned by you post-launch.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="services__foot">
+        <p class="grad-text">Every site we create <span class="w">is SEO-ready from the ground up</span>, giving your optimization <span class="w">a head start from day one.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REAL RESULTS ================= -->
+  <section class="results">
+    <div class="results__inner">
+      <div class="results__head">
+        <h2><span class="w">Real Results</span>.</h2>
+        <a class="results__link" href="#"><span class="grad-text">View All Case Studies</span> <span class="arrow"><img src="assets/arrow-hero.svg" alt="" loading="lazy" decoding="async"></span></a>
+      </div>
+
+      <div class="results__row">
+        <article class="card card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">180%</p><p class="label">Increase in Conversion Rate</p></div>
+            <p class="case__client grad-text">Briondo Rrentals</p>
+          </div>
+          <div class="case__img"><img src="assets/case-1.webp" alt="Briondo Rentals case study" loading="lazy" decoding="async"></div>
+        </article>
+        <article class="card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">72%</p><p class="label">Organic Search increases</p></div>
+            <p class="case__client grad-text">Zabs Plumbing</p>
+          </div>
+          <div class="case__img"><img src="assets/case-2.webp" alt="Zabs Plumbing case study" loading="lazy" decoding="async"></div>
+        </article>
+        <article class="card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">180%</p><p class="label">Increase in Organic Traffic</p></div>
+            <p class="case__client grad-text">Appliance Repairs Online</p>
+          </div>
+          <div class="case__img"><img src="assets/case-3.webp" alt="Appliance Repairs Online case study" loading="lazy" decoding="async"></div>
+        </article>
+      </div>
+
+      <div class="results__row">
+        <article class="card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">62%</p><p class="label">In 6 month Organic Growth</p></div>
+            <p class="case__client grad-text">Briondo Rrentals</p>
+          </div>
+          <div class="case__img"><img src="assets/case-4.webp" alt="Briondo Rentals organic growth case study" loading="lazy" decoding="async"></div>
+        </article>
+        <article class="card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">192%</p><p class="label">Organic Traffic increase</p></div>
+            <p class="case__client grad-text">Zabs Plumbing</p>
+          </div>
+          <div class="case__img"><img src="assets/case-5.webp" alt="Zabs Plumbing traffic case study" loading="lazy" decoding="async"></div>
+        </article>
+        <article class="card">
+          <div class="case__top">
+            <div class="case__stat"><p class="num">48%</p><p class="label">Increase in Conversion Rate</p></div>
+            <p class="case__client grad-text">Appliance Repairs Online</p>
+          </div>
+          <div class="case__img"><img src="assets/case-6.webp" alt="Appliance Repairs Online conversion case study" loading="lazy" decoding="async"></div>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <section class="testimonials">
+    <img class="sec-bg" src="assets/bg-wireframe.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="testimonials__inner">
+      <div class="testimonials__topline">
+        <div class="rating">
+          <div class="rating__google"><img src="assets/google.svg" alt="Google" loading="lazy" decoding="async"></div>
+          <div class="rating__stars">
+            <img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async"><img src="assets/star.svg" alt="" loading="lazy" decoding="async">
+          </div>
+          <p class="rating__text">5.0 | 31 <u>reviews</u></p>
+        </div>
+        <button class="testimonials__motion-toggle" type="button" aria-pressed="false" aria-label="Pause testimonial animation">
+          <span class="testimonials__motion-icon" aria-hidden="true"></span>
+          <span class="testimonials__motion-label">Pause</span>
+        </button>
+      </div>
+
+      <h2 class="grad-text">12+ years<span class="w"> helping business owners thrive.</span></h2>
+
+      <div class="testimonials__viewport" role="region" aria-roledescription="carousel" aria-label="Client testimonials">
+        <div class="testimonials__row">
+          <div class="testimonials__set">
+            <article class="card testimonial t1">
+              <div class="quote"><img src="assets/quote.svg" alt="" loading="lazy" decoding="async"></div>
+              <p>Such a great team to work with — professional, efficient, and incredibly talented. We worked with Design Point on our website and couldn’t be happier with the result. They brought our vision to life perfectly and made the whole process seamless. Absolutely love their work and highly recommend them!</p>
+              <p class="name">Stephanie T.</p>
+            </article>
+            <article class="card testimonial t2">
+              <div class="quote"><img src="assets/quote.svg" alt="" loading="lazy" decoding="async"></div>
+              <p>Adrian, Akeel, and David were fantastic. What they created was beyond my expectations and within budget. Their communication was prompt and they understood exactly what I was looking for and were not afraid to experiment. I highly recommend the team at Design Point. I’ll definitely be a repeat customer.</p>
+              <p class="name">Clara Higgins</p>
+            </article>
+            <article class="card testimonial">
+              <div class="quote"><img src="assets/quote.svg" alt="" loading="lazy" decoding="async"></div>
+              <p>Adrian from the team was extremely helpful, he completed the project ahead of the original deadline, was really understanding with all of my feedback and edits would would highly recommend Design Point</p>
+              <p class="name">Tom Everitt</p>
+            </article>
+            <article class="card testimonial t4">
+              <div class="quote"><img src="assets/quote.svg" alt="" loading="lazy" decoding="async"></div>
+              <p>Adrian and the team were brilliant. We had a bit of a deadline and at all points they were super strong. We gave them a budget and Adrian was great at managing the whole process for us. Communications were always on check and fast, which I loved. Highly recommend</p>
+              <p class="name">Vaughan Ryan</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="faq">
+    <div class="faq__inner">
+      <h2>Conversion-Optimised FAQ</h2>
+      <div class="faq__list">
+        <details class="card faq__item" open>
+          <summary><h3>How long does a typical custom build take?</h3><img src="assets/plus.svg" alt="" loading="lazy" decoding="async"></summary>
+          <p>Most custom builds require between 6 to 12 weeks from strategy alignment to launch, depending on complexity and features.</p>
+        </details>
+        <details class="card faq__item">
+          <summary><h3>Will our website look like our competitor's?</h3><img src="assets/plus.svg" alt="" loading="lazy" decoding="async"></summary>
+          <p>Never. We build completely bespoke design systems specifically for your brand value position. No templates, ever.</p>
+        </details>
+        <details class="card faq__item">
+          <summary><h3>How do you guarantee speed optimizations?</h3><img src="assets/plus.svg" alt="" loading="lazy" decoding="async"></summary>
+          <p>We build clean component codes, utilize headless frameworks, compress all media assets, and target perfect Google Core Web Vital scores.</p>
+        </details>
+        <details class="card faq__item">
+          <summary><h3>Do you offer post-launch maintenance?</h3><img src="assets/plus.svg" alt="" loading="lazy" decoding="async"></summary>
+          <p>Yes, we provide ongoing conversion optimization, split AB tests, security upgrades, and routine feature engineering support.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="final">
+    <img class="sec-bg" src="assets/bg-wireframe.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="final__inner">
+      <h2>Stop Losing Customers<br>to a Low-Performance Website</h2>
+      <div class="final__underline"><img src="assets/underline-cta.svg" alt="" loading="lazy" decoding="async"></div>
+      <p>Claim your free 45-minute Web Performance Strategy Session with a senior Australian digital architect. We will map your user paths, audit your speed, and find conversion leaks.</p>
+    </div>
+    <a class="btn btn--featured" href="#quote">Get a free website proposal <span class="arrow"><img src="assets/arrow-hero.svg" alt="" loading="lazy" decoding="async"></span></a>
+  </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="#" class="logo"><img src="assets/logo.webp" alt="Design Point" loading="lazy" decoding="async"></a>
+          <p>High-performance web engineering for commercially ambitious Australian businesses. Based proudly in Melbourne.</p>
+        </div>
+        <div class="footer__contact">
+          <div><img src="assets/map-pin.svg" alt="" loading="lazy" decoding="async"><p>Office 907, 9 Yarra St,South Yarra Vic 3141</p></div>
+          <div><img src="assets/phone.svg" alt="" aria-hidden="true" loading="lazy" decoding="async"><p><a href="tel:1300123456">1300 123 456</a></p></div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <div class="footer__rule"><img src="assets/footer-line.svg" alt="" loading="lazy" decoding="async"></div>
+        <div class="footer__legal">
+          <p>© 2026 DesignPoint Digital. Made in Melbourne. All rights reserved.</p>
+          <nav>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+<aside class="floating-cta-bar" aria-label="Website proposal" aria-hidden="true" inert>
+  <div class="floating-cta-bar__inner">
+    <p class="floating-cta-bar__message">
+      <strong>Ready for a website that wins more business?</strong>
+      <span>Get a tailored recommendation from our Melbourne team.</span>
+    </p>
+    <div class="floating-cta-bar__actions">
+      <a class="floating-cta-bar__phone" href="tel:1300123456">
+        <img src="assets/phone.svg" alt="" loading="lazy" decoding="async">
+        <span>1300 123 456</span>
+      </a>
+      <a class="btn floating-cta-bar__button" href="#quote">
+        Get a free website proposal
+        <span class="arrow"><img src="assets/arrow-hero.svg" alt="" loading="lazy" decoding="async"></span>
+      </a>
+      <button class="floating-cta-bar__dismiss" type="button" aria-label="Dismiss proposal bar">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+  </div>
+</aside>
+<script>
+  (() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reduceMotion) {
+      const logoTracks = document.querySelectorAll('.marquee__track');
+      let logoMotionReady = logoTracks.length > 0;
+
+      logoTracks.forEach((track) => {
+        const originalSet = track.querySelector('.marquee__set');
+        if (!originalSet) {
+          logoMotionReady = false;
+          return;
+        }
+
+        const duplicateSet = originalSet.cloneNode(true);
+        duplicateSet.setAttribute('aria-hidden', 'true');
+        track.appendChild(duplicateSet);
+      });
+
+      if (logoMotionReady) {
+        document.documentElement.classList.add('logo-motion-ready');
+      }
+
+      const testimonialRow = document.querySelector('.testimonials__row');
+      const testimonialSet = testimonialRow?.querySelector('.testimonials__set');
+      const testimonialViewport = document.querySelector('.testimonials__viewport');
+      const testimonialToggle = document.querySelector('.testimonials__motion-toggle');
+
+      if (testimonialRow && testimonialSet && testimonialViewport && testimonialToggle) {
+        for (let index = 0; index < 2; index += 1) {
+          const duplicateSet = testimonialSet.cloneNode(true);
+          duplicateSet.setAttribute('aria-hidden', 'true');
+          testimonialRow.appendChild(duplicateSet);
+        }
+
+        document.documentElement.classList.add('testimonial-motion-ready');
+
+        let testimonialsPaused = false;
+        const testimonialLabel = testimonialToggle.querySelector('.testimonials__motion-label');
+
+        if ('IntersectionObserver' in window) {
+          const testimonialMotionObserver = new IntersectionObserver(([entry]) => {
+            testimonialViewport.classList.toggle('is-offscreen', !entry.isIntersecting);
+          }, {
+            rootMargin: '120px 0px'
+          });
+          testimonialMotionObserver.observe(testimonialViewport);
+        }
+
+        testimonialToggle.addEventListener('click', () => {
+          testimonialsPaused = !testimonialsPaused;
+          testimonialViewport.classList.toggle('is-paused', testimonialsPaused);
+          testimonialToggle.classList.toggle('is-paused', testimonialsPaused);
+          testimonialToggle.setAttribute('aria-pressed', String(testimonialsPaused));
+          testimonialToggle.setAttribute(
+            'aria-label',
+            testimonialsPaused ? 'Resume testimonial animation' : 'Pause testimonial animation'
+          );
+          if (testimonialLabel) {
+            testimonialLabel.textContent = testimonialsPaused ? 'Resume' : 'Pause';
+          }
+        });
+      }
+    }
+
+    const floatingCta = document.querySelector('.floating-cta-bar');
+    const heroProposalCta = document.querySelector('.hero .btn--featured');
+    const floatingCtaDismiss = floatingCta?.querySelector('.floating-cta-bar__dismiss');
+
+    if (floatingCta && heroProposalCta) {
+      let floatingCtaFrame = 0;
+      let floatingCtaDismissed = false;
+
+      try {
+        floatingCtaDismissed = window.sessionStorage.getItem('proposalBarDismissed') === 'true';
+      } catch (error) {
+        floatingCtaDismissed = false;
+      }
+
+      const syncFloatingCta = () => {
+        floatingCtaFrame = 0;
+        const heroCtaPassed = heroProposalCta.getBoundingClientRect().bottom <= 0;
+        const keepVisibleForFocus = floatingCta.contains(document.activeElement);
+        const shouldShow = !floatingCtaDismissed &&
+          ((window.scrollY > 24 && heroCtaPassed) || keepVisibleForFocus);
+
+        floatingCta.classList.toggle('is-visible', shouldShow);
+        floatingCta.inert = !shouldShow;
+        if (shouldShow) {
+          floatingCta.removeAttribute('aria-hidden');
+        } else {
+          floatingCta.setAttribute('aria-hidden', 'true');
+        }
+      };
+
+      const scheduleFloatingCtaSync = () => {
+        if (floatingCtaFrame) return;
+        floatingCtaFrame = window.requestAnimationFrame(syncFloatingCta);
+      };
+
+      window.addEventListener('scroll', scheduleFloatingCtaSync, {passive:true});
+      window.addEventListener('resize', scheduleFloatingCtaSync);
+      floatingCta.addEventListener('focusout', scheduleFloatingCtaSync);
+      floatingCtaDismiss?.addEventListener('click', () => {
+        floatingCtaDismissed = true;
+        floatingCtaDismiss.blur();
+        try {
+          window.sessionStorage.setItem('proposalBarDismissed', 'true');
+        } catch (error) {
+          // The in-memory flag still keeps the bar dismissed for this page view.
+        }
+        syncFloatingCta();
+      });
+      scheduleFloatingCtaSync();
+    }
+
+    if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+    const targets = document.querySelectorAll([
+      '.problem__copy',
+      '.form-card',
+      '.services__head',
+      '.services__row .card',
+      '.services__foot',
+      '.results__head',
+      '.results__row .card',
+      '.testimonials__inner > .rating',
+      '.testimonials__inner > h2',
+      '.testimonials__viewport',
+      '.faq__inner > h2',
+      '.faq__item',
+      '.final__inner',
+      '.final > .btn',
+      '.footer__top',
+      '.footer__bottom'
+    ].join(','));
+
+    document.documentElement.classList.add('motion-ready');
+
+    const groupIndexes = new WeakMap();
+    targets.forEach((target) => {
+      const parent = target.parentElement;
+      const index = groupIndexes.get(parent) || 0;
+      groupIndexes.set(parent, index + 1);
+      target.classList.add('reveal');
+      target.style.setProperty('--reveal-delay', `${Math.min(index, 3) * 70}ms`);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, {
+      threshold: 0.14,
+      rootMargin: '0px 0px -8% 0px'
+    });
+
+    targets.forEach((target) => observer.observe(target));
+  })();
+</script>
+</body>
+</html>
