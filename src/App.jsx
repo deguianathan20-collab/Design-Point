@@ -736,18 +736,18 @@ function FloatingCta() {
       return false;
     }
   });
-  const [heroPassed, setHeroPassed] = useState(false);
+  const [marqueePassed, setMarqueePassed] = useState(false);
   const [quoteVisible, setQuoteVisible] = useState(false);
   const barRef = useRef(null);
 
   useEffect(() => {
-    const heroProposalCta = document.querySelector('.hero .btn--featured');
+    const logoMarquee = document.querySelector('.marquee');
     let frame = 0;
 
     const syncPosition = () => {
       frame = 0;
-      setHeroPassed(
-        Boolean(heroProposalCta && heroProposalCta.getBoundingClientRect().bottom <= 0),
+      setMarqueePassed(
+        Boolean(logoMarquee && logoMarquee.getBoundingClientRect().bottom <= 0),
       );
     };
     const scheduleSync = () => {
@@ -777,7 +777,7 @@ function FloatingCta() {
     return () => observer.disconnect();
   }, []);
 
-  const visible = !dismissed && heroPassed && !quoteVisible;
+  const visible = !dismissed && marqueePassed && !quoteVisible;
 
   function dismiss() {
     setDismissed(true);
