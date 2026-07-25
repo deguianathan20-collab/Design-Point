@@ -14,6 +14,7 @@
     --motion-fast:180ms;
     --motion-medium:360ms;
     --motion-slow:720ms;
+    --hero-height:987px;
     /* CTA label colour.
        KNOWN WCAG AA EXCEPTION: white on the cyan gradient stop measures
        2.30:1 and on the blue stop 4.00:1, against a 4.5:1 requirement
@@ -118,7 +119,7 @@
   .sec-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.24;pointer-events:none;}
 
   /* ================= HERO ================= */
-  .hero{position:relative;height:987px;}
+  .hero{position:relative;height:var(--hero-height);}
 
   .hero__bgwrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
   .hero__bg{position:absolute;top:0;left:-11.45%;width:122.9%;height:102.63%;max-width:none;opacity:.25;object-fit:cover;}
@@ -167,7 +168,7 @@
     color:var(--ink);
   }
 
-  .hero__content{position:absolute;left:157px;top:229px;width:1120px;display:flex;flex-direction:column;gap:144px;z-index:4;}
+  .hero__content{position:absolute;left:157px;top:229px;width:1120px;display:flex;flex-direction:column;gap:84px;z-index:4;}
 
   .hero__row{display:flex;align-items:center;gap:80px;}
   .hero__col{flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;}
@@ -224,7 +225,9 @@
     left:-34px;
     width:1483px;
     height:136px;
-    margin-top:157px;
+    /* Show one 54px logo-row slice at the fold without moving the hero.
+       The -41px floor prevents overlap on unusually short displays. */
+    margin-top:max(-41px,calc(100svh - var(--hero-height) - 54px));
     overflow:hidden;
   }
   .marquee__inner{opacity:.7;display:flex;flex-direction:column;gap:24px;align-items:center;}
@@ -579,7 +582,6 @@
       transform:translateX(-50%);
       width:var(--container);
     }
-
     .ellipse{left:calc(50% + 113px);}
 
     .marquee{
@@ -594,10 +596,10 @@
     :root{
       --container:1240px;
       --pad-y:132px;
+      --hero-height:1060px;
     }
 
-    .hero{height:1060px;}
-    .hero__content{top:210px;gap:132px;}
+    .hero__content{top:210px;gap:80px;}
     .hero__row{
       display:grid;
       grid-template-columns:minmax(0,1fr) 500px;
@@ -631,10 +633,10 @@
     :root{
       --container:1360px;
       --pad-y:144px;
+      --hero-height:1066px;
     }
 
-    .hero{height:1120px;}
-    .hero__content{top:220px;gap:144px;}
+    .hero__content{top:200px;gap:70px;}
     .hero__row{
       grid-template-columns:minmax(0,1fr) 540px;
       gap:140px;
@@ -658,6 +660,7 @@
     :root{
       --container:1440px;
       --pad-y:160px;
+      --hero-height:1090px;
     }
 
     .hero__row{grid-template-columns:minmax(0,1fr) 560px;gap:160px;}
@@ -1025,17 +1028,19 @@
     }
     .floating-cta-bar__inner{
       width:calc(100% - 32px);
-      min-height:66px;
-      gap:24px;
-      padding:10px 0;
+      min-height:0;
+      flex-direction:column;
+      align-items:stretch;
+      gap:12px;
+      padding:14px 0;
     }
-    .floating-cta-bar__message{font-size:14px;}
+    .floating-cta-bar__message{font-size:14px;text-align:center;}
     .floating-cta-bar__message span{display:none;}
-    .floating-cta-bar__actions{width:auto;gap:8px;}
+    .floating-cta-bar__actions{width:100%;justify-content:center;gap:8px;}
     .floating-cta-bar__phone{display:none;}
     .floating-cta-bar__button{
       width:auto;
-      flex:0 0 auto;
+      flex:1;
       justify-content:center;
       padding:14px 20px;
       font-size:14px;
@@ -1048,10 +1053,10 @@
     }
     .floating-cta-bar__inner{
       width:100%;
-      gap:0;
-      padding:10px;
+      gap:10px;
+      padding:12px;
     }
-    .floating-cta-bar__message{display:none;}
+    .floating-cta-bar__message{font-size:13px;}
     .floating-cta-bar__actions{width:100%;}
     .floating-cta-bar__button{
       min-width:0;
@@ -1060,7 +1065,7 @@
     }
   }
   @media (max-width:359.98px){
-    .floating-cta-bar__inner{padding:8px;}
+    .floating-cta-bar__inner{padding:10px;}
     .floating-cta-bar__button{gap:8px;padding:13px 10px;font-size:13px;}
   }
 
@@ -1129,7 +1134,6 @@
   .hero h1{animation:hero-enter var(--motion-slow) .16s var(--ease-out) both;}
   .hero__lead{animation:hero-enter var(--motion-slow) .24s var(--ease-out) both;}
   .hero__media{animation:hero-media-enter 900ms .18s var(--ease-out) both;}
-  .hero__usps{animation:hero-enter var(--motion-slow) .38s var(--ease-out) both;}
   .hero__media-bg{animation:ambient-drift 9s 1.2s ease-in-out infinite;}
   .ellipse img{animation:ambient-pulse 6s 1s ease-in-out infinite;}
   .hero__arrow-rot img{animation:sketch-draw 900ms .52s var(--ease-out) both;}
@@ -1145,6 +1149,13 @@
   .btn--featured[aria-busy="true"]{animation:none !important;}
 
   @media (prefers-reduced-motion:no-preference){
+    .hero__usps .usp{
+      animation:hero-enter 560ms var(--ease-out) both;
+    }
+    .hero__usps .usp:nth-child(1){animation-delay:.46s;}
+    .hero__usps .usp:nth-child(2){animation-delay:.66s;}
+    .hero__usps .usp:nth-child(3){animation-delay:.86s;}
+
     .hero .btn--featured{
       animation:cta-glow-pulse 2.4s ease-in-out infinite;
     }

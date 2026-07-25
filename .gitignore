@@ -7,4 +7,8 @@ dist
 npm-debug.log*
 qa-output
 .qa-*
+*.tmp.*
 .claude/settings.local.json
+
+.vercel
+.env*
