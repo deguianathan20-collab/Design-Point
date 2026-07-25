@@ -5,15 +5,24 @@ export const CONTACT_LIMITS = Object.freeze({
 });
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_CHARACTERS_PATTERN = /^[0-9+()\s-]{8,24}$/;
+const PHONE_CHARACTERS_PATTERN = /^[0-9+()\s-]{6,24}$/;
+const AUSTRALIAN_PHONE_PATTERN = /^(?:0(?:[2378]\d{8}|4\d{8})|13\d{4}|1[38]00\d{6})$/;
 
 function clean(value, maxLength) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 }
 
-function hasValidPhoneDigits(value) {
-  const digitCount = value.replace(/\D/g, '').length;
-  return digitCount >= 8 && digitCount <= 15;
+function normaliseAustralianPhone(value) {
+  const digits = value.replace(/\D/g, '');
+  if (!digits.startsWith('61')) return digits;
+
+  const nationalNumber = digits.slice(2);
+  return nationalNumber.startsWith('1') ? nationalNumber : `0${nationalNumber}`;
+}
+
+export function sanitizeAustralianPhoneInput(value) {
+  const allowedCharacters = typeof value === 'string' ? value.replace(/[^0-9+()\s-]/g, '') : '';
+  return allowedCharacters.replace(/(?!^)\+/g, '');
 }
 
 export function validateContactDetails(values) {
@@ -32,8 +41,11 @@ export function validateContactDetails(values) {
     errors.email = 'Enter an email address in the format name@example.com.';
   }
 
-  if (!PHONE_CHARACTERS_PATTERN.test(data.phone) || !hasValidPhoneDigits(data.phone)) {
-    errors.phone = 'Enter a phone number containing 8 to 15 digits.';
+  if (
+    !PHONE_CHARACTERS_PATTERN.test(data.phone) ||
+    !AUSTRALIAN_PHONE_PATTERN.test(normaliseAustralianPhone(data.phone))
+  ) {
+    errors.phone = 'Enter a valid Australian mobile, landline, 13, 1300, or 1800 number.';
   }
 
   return { data, errors };

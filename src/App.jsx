@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CONTACT_LIMITS, validateContactDetails } from '../shared/contact-validation.js';
+import {
+  CONTACT_LIMITS,
+  sanitizeAustralianPhoneInput,
+  validateContactDetails,
+} from '../shared/contact-validation.js';
 
 const asset = (fileName) => `/assets/${fileName}`;
 
@@ -200,12 +204,109 @@ function Rating() {
   );
 }
 
-function ProposalButton({ className = '', children = 'Get a free website proposal' }) {
+function ProposalButton({ className = '', children = 'Get a free website proposal', href = '#quote' }) {
   return (
-    <a className={`btn ${className}`.trim()} href="#quote">
+    <a className={`btn ${className}`.trim()} href={href}>
       {children}
       <ArrowIcon />
     </a>
+  );
+}
+
+function AltHeroLogoGrid({ reducedMotion }) {
+  return (
+    <section className="alt-hero__logos" aria-label="Client logos">
+      <p>Trusted by Australia&apos;s Best</p>
+      <div className="alt-hero__logo-rows">
+        {logoRows.map((logos, rowIndex) => (
+          <div
+            className={`alt-hero__logo-row ${rowIndex === 1 ? 'alt-hero__logo-row--2' : ''}`.trim()}
+            key={rowIndex}
+          >
+            <div className="alt-hero__logo-track">
+              <LogoSet logos={logos} />
+              {!reducedMotion && <LogoSet logos={logos} duplicate />}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AlternateHeroPage({ reducedMotion }) {
+  return (
+    <>
+      <main id="main">
+      <section className="alt-hero" id="top">
+      <div className="alt-hero__background" aria-hidden="true">
+        <Image file="bg-wireframe.webp" alt="" />
+      </div>
+
+      <header className="alt-hero__nav">
+        <a href="#top" className="alt-hero__logo" aria-label="Back to the top">
+          <Image file="logo.webp" alt="Design Point" />
+        </a>
+        <div className="alt-hero__nav-actions">
+          <a href="tel:1300123456">1300 123 456</a>
+          <ProposalButton className="alt-hero__nav-cta" href="#quote">
+            Get a free quote
+          </ProposalButton>
+        </div>
+      </header>
+
+      <section className="alt-hero__stage" aria-labelledby="alt-hero-title">
+        <div className="alt-hero__copy">
+          <Rating />
+          <h1 id="alt-hero-title">
+            <span>We Design</span> High-Performance <span>Websites</span> That Perform and
+            Convert—<span>Not Just Look Good.</span>
+          </h1>
+          <p className="alt-hero__proof">
+            <strong>Backed by 12+ years of experience,</strong> our Melbourne-based team creates
+            fast, secure, and powerful websites engineered for scalable, long-term growth.
+          </p>
+          <div className="alt-hero__cta">
+            <p>Stop letting a clunky build hold your marketing back.</p>
+            <ProposalButton className="btn--featured" href="#quote" />
+          </div>
+          <div className="alt-hero__usps">
+            {[
+              'Fast, secure & powerful websites optimised to convert',
+              'Custom-developed solutions for your business needs',
+              'Direct access to expert senior developers',
+            ].map((usp) => (
+              <div key={usp}>
+                <Image file="check-circle.svg" alt="" />
+                <p>{usp}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="alt-hero__media" aria-label="Design Point team member and client reviews">
+          <Image className="alt-hero__media-background" file="hero-right-bg.webp" alt="" />
+          <img
+            className="alt-hero__person"
+            fetchPriority="high"
+            decoding="async"
+            src={asset('hero-person.webp')}
+            alt="Design Point team member"
+          />
+        </div>
+
+        <AltHeroLogoGrid reducedMotion={reducedMotion} />
+      </section>
+      </section>
+      <ProblemSection />
+      <Services />
+      <Results />
+      <Testimonials reducedMotion={reducedMotion} />
+      <Faq />
+      <FinalCta />
+      </main>
+      <Footer />
+    </>
   );
 }
 
@@ -371,6 +472,17 @@ function ContactForm() {
     }
   }
 
+  function handlePhoneInput(event) {
+    const phoneInput = event.currentTarget;
+    const sanitizedValue = sanitizeAustralianPhoneInput(phoneInput.value);
+
+    if (phoneInput.value !== sanitizedValue) {
+      phoneInput.value = sanitizedValue;
+    }
+
+    handleFieldInput(event);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -502,12 +614,17 @@ function ContactForm() {
             autoComplete="tel"
             inputMode="tel"
             maxLength={CONTACT_LIMITS.phone}
+            placeholder="0412 345 678"
+            title="Enter an Australian mobile, landline, 13, 1300, or 1800 number."
             required
             aria-invalid={fieldErrors.phone ? 'true' : undefined}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            aria-describedby={fieldErrors.phone ? 'phone-format phone-error' : 'phone-format'}
             onBlur={handleFieldBlur}
-            onInput={handleFieldInput}
+            onInput={handlePhoneInput}
           />
+          <span className="sr-only" id="phone-format">
+            Enter an Australian mobile, landline, 13, 1300, or 1800 number.
+          </span>
           {fieldErrors.phone && (
             <p className="field__error" id="phone-error">
               {fieldErrors.phone}
@@ -613,8 +730,17 @@ function Services() {
 
         <div className="services__foot">
           <p className="grad-text">
-            Every site we create <span className="w">is SEO-ready from the ground up</span>, giving
-            your optimisation <span className="w">a head start from day one.</span>
+            Every site we create{' '}
+            <span className="w">
+              is{' '}
+              <span className="seo-ready-highlight">
+                SEO-ready
+                <span className="services__underline" aria-hidden="true">
+                  <Image file="underline.svg" alt="" />
+                </span>
+              </span>{' '}
+              from the ground up
+            </span>, giving your optimisation <span className="w">a head start from day one.</span>
           </p>
         </div>
       </div>
@@ -679,7 +805,6 @@ function TestimonialSet({ duplicate = false }) {
 }
 
 function Testimonials({ reducedMotion }) {
-  const [paused, setPaused] = useState(false);
   const [offscreen, setOffscreen] = useState(false);
   const viewportRef = useRef(null);
 
@@ -700,18 +825,6 @@ function Testimonials({ reducedMotion }) {
       <div className="testimonials__inner">
         <div className="testimonials__topline">
           <Rating />
-          {!reducedMotion && (
-            <button
-              className={`testimonials__motion-toggle ${paused ? 'is-paused' : ''}`.trim()}
-              type="button"
-              aria-pressed={paused}
-              aria-label={paused ? 'Resume testimonial animation' : 'Pause testimonial animation'}
-              onClick={() => setPaused((current) => !current)}
-            >
-              <span className="testimonials__motion-icon" aria-hidden="true" />
-              <span className="testimonials__motion-label">{paused ? 'Resume' : 'Pause'}</span>
-            </button>
-          )}
         </div>
 
         <h2 className="grad-text">
@@ -719,9 +832,7 @@ function Testimonials({ reducedMotion }) {
         </h2>
 
         <div
-          className={`testimonials__viewport ${paused ? 'is-paused' : ''} ${
-            offscreen ? 'is-offscreen' : ''
-          }`.trim()}
+          className={`testimonials__viewport ${offscreen ? 'is-offscreen' : ''}`}
           role="region"
           aria-roledescription="carousel"
           aria-label="Client testimonials"
@@ -967,24 +1078,29 @@ function usePageMotion(reducedMotion) {
 export default function App() {
   const reducedMotion = useReducedMotion();
   usePageMotion(reducedMotion);
+  const isAlternateHero = window.location.pathname.replace(/\/$/, '') === '/hero-alt';
 
   const pageContent = useMemo(
-    () => (
-      <>
-        <Hero />
-        <LogoMarquee reducedMotion={reducedMotion} />
-        <main id="main">
-          <ProblemSection />
-          <Services />
-          <Results />
-          <Testimonials reducedMotion={reducedMotion} />
-          <Faq />
-          <FinalCta />
-        </main>
-        <Footer />
-      </>
-    ),
-    [reducedMotion],
+    () => {
+      if (isAlternateHero) return <AlternateHeroPage reducedMotion={reducedMotion} />;
+
+      return (
+        <>
+          <Hero />
+          <LogoMarquee reducedMotion={reducedMotion} />
+          <main id="main">
+            <ProblemSection />
+            <Services />
+            <Results />
+            <Testimonials reducedMotion={reducedMotion} />
+            <Faq />
+            <FinalCta />
+          </main>
+          <Footer />
+        </>
+      );
+    },
+    [isAlternateHero, reducedMotion],
   );
 
   return (
@@ -992,7 +1108,7 @@ export default function App() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <div className="page">{pageContent}</div>
+      <div className={`page ${isAlternateHero ? 'page--alt-hero' : ''}`.trim()}>{pageContent}</div>
       <FloatingCta />
     </>
   );
