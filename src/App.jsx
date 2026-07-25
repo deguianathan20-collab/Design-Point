@@ -729,25 +729,20 @@ function Footer() {
 }
 
 function FloatingCta() {
-  const [dismissed, setDismissed] = useState(() => {
-    try {
-      return window.sessionStorage.getItem('proposalBarDismissed') === 'true';
-    } catch {
-      return false;
-    }
-  });
-  const [marqueePassed, setMarqueePassed] = useState(false);
-  const [quoteVisible, setQuoteVisible] = useState(false);
-  const barRef = useRef(null);
+  const [dismissed, setDismissed] = useState(false);
+  const [nextSectionReached, setNextSectionReached] = useState(false);
 
   useEffect(() => {
-    const logoMarquee = document.querySelector('.marquee');
+    const nextSectionContent = document.querySelector('.problem__inner');
     let frame = 0;
 
     const syncPosition = () => {
       frame = 0;
-      setMarqueePassed(
-        Boolean(logoMarquee && logoMarquee.getBoundingClientRect().bottom <= 0),
+      setNextSectionReached(
+        Boolean(
+          nextSectionContent &&
+            nextSectionContent.getBoundingClientRect().top <= window.innerHeight,
+        ),
       );
     };
     const scheduleSync = () => {
@@ -765,36 +760,14 @@ function FloatingCta() {
     };
   }, []);
 
-  useEffect(() => {
-    const quote = document.getElementById('quote');
-    if (!quote || !('IntersectionObserver' in window)) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setQuoteVisible(entry.isIntersecting),
-      { threshold: 0.05 },
-    );
-    observer.observe(quote);
-    return () => observer.disconnect();
-  }, []);
-
-  const visible = !dismissed && marqueePassed && !quoteVisible;
-
-  function dismiss() {
-    setDismissed(true);
-    try {
-      window.sessionStorage.setItem('proposalBarDismissed', 'true');
-    } catch {
-      // The in-memory state still dismisses the bar for the current page view.
-    }
-  }
+  const visible = !dismissed && nextSectionReached;
 
   return (
     <aside
       className={`floating-cta-bar ${visible ? 'is-visible' : ''}`.trim()}
       aria-label="Website proposal"
-      aria-hidden={!visible}
+      aria-hidden={visible ? undefined : true}
       inert={!visible}
-      ref={barRef}
     >
       <div className="floating-cta-bar__inner">
         <p className="floating-cta-bar__message">
@@ -811,7 +784,7 @@ function FloatingCta() {
             className="floating-cta-bar__dismiss"
             type="button"
             aria-label="Dismiss proposal bar"
-            onClick={dismiss}
+            onClick={() => setDismissed(true)}
           >
             <span aria-hidden="true">×</span>
           </button>
