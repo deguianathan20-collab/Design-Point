@@ -532,40 +532,62 @@
   .bento-hero__actions{margin-top:32px;display:flex;flex-direction:column;align-items:flex-start;gap:24px;}
   .bento-hero__actions .btn{width:auto;}
 
+  /* Tile ratios follow the source photography rather than the other way round:
+     the case-study images are landscape with the client's logo across the
+     lower-right, so portrait-ish tiles cropped that logo off mid-word. */
   .bento-hero__grid{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    grid-auto-rows:1fr;
-    aspect-ratio:4 / 3;
+    grid-template-columns:repeat(2,1fr);
     gap:16px;
   }
+  .bento-hero__grid > li{display:flex;min-width:0;}
+  .bento-hero__grid > li:first-child{grid-column:1 / -1;}
+  .bento-hero__grid > li:first-child .bento-hero__tile{aspect-ratio:16 / 9;}
+  .bento-hero__grid > li:not(:first-child) .bento-hero__tile{aspect-ratio:3 / 2;}
   .bento-hero__tile{
     position:relative;
+    flex:1;
+    min-width:0;
     overflow:hidden;
     border-radius:12px;
     border:1px solid var(--hairline);
     background:var(--card);
+    isolation:isolate;
   }
-  .bento-hero__tile:first-child{grid-column:span 2;grid-row:span 2;}
-  .bento-hero__tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .bento-hero__tile-media{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform var(--motion-medium) var(--ease-out);
+  }
+  /* Scrim runs top-down, not bottom-up: every case-study photo carries its
+     client's own logo across the lower-right, which a bottom-anchored caption
+     overlapped. */
   .bento-hero__tile::after{
     content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,13,32,0) 45%,rgba(0,13,32,.92) 100%);
+    background:linear-gradient(
+      180deg,
+      rgba(0,13,32,.94) 0%,
+      rgba(0,13,32,.74) 44%,
+      rgba(0,13,32,0) 80%
+    );
   }
-  .bento-hero__tile-stat{
-    position:absolute;left:16px;bottom:34px;z-index:1;
-    font-size:22px;font-weight:900;color:#fff;
+  .bento-hero__tile-caption{
+    position:absolute;left:0;top:0;z-index:1;
+    display:flex;flex-direction:column;gap:5px;
+    padding:20px;
   }
-  .bento-hero__tile-client{
-    position:absolute;left:16px;bottom:14px;z-index:1;
-    font-size:12px;font-weight:600;color:var(--muted);
-  }
-  .bento-hero__tile:first-child .bento-hero__tile-stat{font-size:34px;bottom:46px;}
-  .bento-hero__tile:first-child .bento-hero__tile-client{font-size:14px;bottom:20px;}
+  .bento-hero__tile-stat{font-size:24px;font-weight:900;line-height:1;color:#fff;}
+  .bento-hero__tile-metric{font-size:13px;font-weight:600;line-height:1.3;color:var(--cyan);}
+  .bento-hero__tile-client{font-size:12px;font-weight:600;line-height:1.3;color:var(--muted);}
+  .bento-hero__grid > li:first-child .bento-hero__tile-caption{padding:24px;gap:6px;}
+  .bento-hero__grid > li:first-child .bento-hero__tile-stat{font-size:40px;}
+  .bento-hero__grid > li:first-child .bento-hero__tile-metric{font-size:15px;}
+  .bento-hero__grid > li:first-child .bento-hero__tile-client{font-size:13px;}
 
   @media (hover:hover) and (pointer:fine){
-    .bento-hero__tile:hover img{transform:scale(1.04);}
-    .bento-hero__tile img{transition:transform var(--motion-medium) var(--ease-out);}
+    .bento-hero__tile:hover .bento-hero__tile-media{transform:scale(1.04);}
+    .bento-hero__tile:hover{border-color:rgba(var(--cyan-rgb),.5);}
   }
 
   @media (max-width:1023.98px){
@@ -582,16 +604,17 @@
     .bento-hero__nav-phone{display:none;}
     .bento-hero__copy h1{font-size:clamp(1.75rem,7.5vw,2.25rem);}
     .bento-hero__actions{flex-direction:column;align-items:flex-start;gap:16px;}
-    .bento-hero__grid{
-      grid-template-columns:repeat(2,1fr);
-      grid-auto-rows:130px;
-      aspect-ratio:auto;
-    }
-    .bento-hero__tile:first-child{grid-column:span 2;grid-row:span 2;}
-    .bento-hero__tile-stat{font-size:18px;bottom:26px;}
-    .bento-hero__tile-client{font-size:11px;bottom:10px;}
-    .bento-hero__tile:first-child .bento-hero__tile-stat{font-size:26px;bottom:36px;}
-    .bento-hero__tile:first-child .bento-hero__tile-client{font-size:12px;bottom:14px;}
+    /* One column: at ~165px a half-width tile leaves the caption no room. */
+    .bento-hero__grid{grid-template-columns:1fr;gap:12px;}
+    .bento-hero__grid > li:not(:first-child) .bento-hero__tile{aspect-ratio:16 / 9;}
+    .bento-hero__tile-caption{padding:16px;gap:4px;}
+    .bento-hero__tile-stat{font-size:19px;}
+    .bento-hero__tile-metric{font-size:11px;}
+    .bento-hero__tile-client{font-size:11px;}
+    .bento-hero__grid > li:first-child .bento-hero__tile-caption{padding:18px;gap:5px;}
+    .bento-hero__grid > li:first-child .bento-hero__tile-stat{font-size:30px;}
+    .bento-hero__grid > li:first-child .bento-hero__tile-metric{font-size:13px;}
+    .bento-hero__grid > li:first-child .bento-hero__tile-client{font-size:12px;}
   }
 
   @media (prefers-reduced-motion:no-preference){

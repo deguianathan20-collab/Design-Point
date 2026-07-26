@@ -107,6 +107,13 @@ const caseStudies = [
   },
 ];
 
+// The bento hero stamps the client name directly onto the photo, so it can only
+// use case studies whose image carries that same client's branding. In case-4,
+// case-5, and case-6 the visible logo belongs to a different company than the
+// client named here (You Pack, Safecoat, Safe Surface), so those three are held
+// back until the image/client pairings are corrected.
+const bentoCaseStudies = caseStudies.slice(0, 3);
+
 const testimonials = [
   {
     modifier: 't1',
@@ -408,8 +415,8 @@ function BentoHeroPage({ reducedMotion }) {
                 We Design Websites That <span className="grad-text">Actually Perform.</span>
               </h1>
               <p className="bento-hero__dek">
-                Every result on this page is a real client outcome, not a stock template. See what
-                a custom-built, conversion-focused site does for growth.
+                These are real client outcomes, not a stock template. See what a custom-built,
+                conversion-focused site does for growth.
               </p>
               <div className="bento-hero__actions">
                 <ProposalButton className="btn--featured" href="#quote" />
@@ -418,11 +425,23 @@ function BentoHeroPage({ reducedMotion }) {
             </div>
 
             <ul className="bento-hero__grid" aria-label="Client results">
-              {caseStudies.map((item) => (
-                <li className="bento-hero__tile" key={item.client + item.stat}>
-                  <Image file={item.image} alt={item.alt} />
-                  <p className="bento-hero__tile-stat">{item.stat}</p>
-                  <p className="bento-hero__tile-client">{item.client}</p>
+              {bentoCaseStudies.map((item, index) => (
+                <li key={item.client + item.stat}>
+                  <a className="bento-hero__tile" href="#results">
+                    <img
+                      className="bento-hero__tile-media"
+                      src={asset(item.image)}
+                      alt={item.alt}
+                      decoding="async"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={index === 0 ? 'high' : undefined}
+                    />
+                    <span className="bento-hero__tile-caption">
+                      <span className="bento-hero__tile-stat">{item.stat}</span>
+                      <span className="bento-hero__tile-metric">{item.label}</span>
+                      <span className="bento-hero__tile-client">{item.client}</span>
+                    </span>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -883,7 +902,7 @@ function Services() {
 
 function Results() {
   return (
-    <section className="results">
+    <section className="results" id="results">
       <div className="results__inner">
         <div className="results__head">
           <h2>
