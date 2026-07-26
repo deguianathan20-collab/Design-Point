@@ -7,15 +7,15 @@
   "rewrites": [
     {
       "source": "/hero-alt",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/hero-editorial",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/hero-bento",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ],
   "headers": [
