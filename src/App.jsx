@@ -310,6 +310,77 @@ function AlternateHeroPage({ reducedMotion }) {
   );
 }
 
+function EditorialHeroPage({ reducedMotion }) {
+  const proofStat = caseStudies[0];
+  const proofQuote = testimonials.find((item) => item.name === 'Tom Everitt') ?? testimonials[0];
+
+  return (
+    <>
+      <main id="main">
+        <section className="ed-hero" id="top">
+          <header className="ed-hero__nav">
+            <a href="#top" className="ed-hero__logo" aria-label="Back to the top">
+              <Image file="logo.webp" alt="Design Point" />
+            </a>
+            <a className="ed-hero__nav-phone" href="tel:1300123456">
+              1300 123 456
+            </a>
+          </header>
+
+          <div className="ed-hero__stage">
+            <div className="ed-hero__copy">
+              <p className="ed-hero__eyebrow">Melbourne Web Design Studio</p>
+              <h1 className="ed-hero__title">
+                <span className="ed-hero__title-row">We Design</span>
+                <span className="ed-hero__title-row ed-hero__title-row--accent">
+                  High-Performance
+                </span>
+                <span className="ed-hero__title-row">Websites That Convert.</span>
+              </h1>
+              <p className="ed-hero__dek">
+                Not just look good — <strong>engineered to sell.</strong> Twelve-plus years
+                building fast, secure websites for Australian businesses ready to outgrow their
+                current site.
+              </p>
+              <div className="ed-hero__actions">
+                <ProposalButton className="btn--featured" href="#quote" />
+                <Rating />
+              </div>
+            </div>
+
+            <aside className="ed-hero__proof" aria-label="Client results">
+              <div>
+                <p className="ed-hero__proof-eyebrow">Real client result</p>
+                <p className="ed-hero__proof-stat">{proofStat.stat}</p>
+                <p className="ed-hero__proof-label">
+                  {proofStat.label} — {proofStat.client}
+                </p>
+              </div>
+              <div className="ed-hero__proof-divider" aria-hidden="true" />
+              <div className="ed-hero__proof-quote">
+                <Image file="quote.svg" alt="" aria-hidden="true" />
+                <p>{proofQuote.quote}</p>
+                <p className="ed-hero__proof-name">{proofQuote.name}</p>
+              </div>
+            </aside>
+          </div>
+
+          <div className="ed-hero__rule" aria-hidden="true" />
+        </section>
+
+        <LogoMarquee reducedMotion={reducedMotion} />
+        <ProblemSection />
+        <Services />
+        <Results />
+        <Testimonials reducedMotion={reducedMotion} />
+        <Faq />
+        <FinalCta />
+      </main>
+      <Footer />
+    </>
+  );
+}
+
 function Hero() {
   return (
     <section className="hero" id="top">
@@ -984,10 +1055,15 @@ function FloatingCta() {
       inert={!visible}
     >
       <div className="floating-cta-bar__inner">
-        <p className="floating-cta-bar__message">
-          <strong>Ready for a website that wins more business?</strong>
-          <span>Get a tailored recommendation from our Melbourne team.</span>
-        </p>
+        <div className="floating-cta-bar__intro">
+          <a className="floating-cta-bar__logo" href="#top" aria-label="Back to the top">
+            <Image file="logo.webp" alt="Design Point" />
+          </a>
+          <p className="floating-cta-bar__message">
+            <strong>Ready for a website that wins more business?</strong>
+            <span>Get a tailored recommendation from our Melbourne team.</span>
+          </p>
+        </div>
         <div className="floating-cta-bar__actions">
           <a className="floating-cta-bar__phone" href="tel:1300123456">
             <Image file="phone.svg" alt="" />
@@ -1078,11 +1154,14 @@ function usePageMotion(reducedMotion) {
 export default function App() {
   const reducedMotion = useReducedMotion();
   usePageMotion(reducedMotion);
-  const isAlternateHero = window.location.pathname.replace(/\/$/, '') === '/hero-alt';
+  const pathname = window.location.pathname.replace(/\/$/, '');
+  const heroVariant =
+    pathname === '/hero-alt' ? 'alt' : pathname === '/hero-editorial' ? 'editorial' : 'default';
 
   const pageContent = useMemo(
     () => {
-      if (isAlternateHero) return <AlternateHeroPage reducedMotion={reducedMotion} />;
+      if (heroVariant === 'alt') return <AlternateHeroPage reducedMotion={reducedMotion} />;
+      if (heroVariant === 'editorial') return <EditorialHeroPage reducedMotion={reducedMotion} />;
 
       return (
         <>
@@ -1100,15 +1179,22 @@ export default function App() {
         </>
       );
     },
-    [isAlternateHero, reducedMotion],
+    [heroVariant, reducedMotion],
   );
+
+  const pageModifierClass =
+    heroVariant === 'alt'
+      ? 'page--alt-hero'
+      : heroVariant === 'editorial'
+        ? 'page--editorial-hero'
+        : '';
 
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <div className={`page ${isAlternateHero ? 'page--alt-hero' : ''}`.trim()}>{pageContent}</div>
+      <div className={`page ${pageModifierClass}`.trim()}>{pageContent}</div>
       <FloatingCta />
     </>
   );

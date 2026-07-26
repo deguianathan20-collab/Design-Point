@@ -354,6 +354,141 @@
     .alt-hero .marquee__set > div{height:20px;}
   }
 
+  /* ================= EDITORIAL HERO =================
+     Standalone /hero-editorial composition: type-led asymmetric 12-col
+     split. One real-data proof card carries the "evidence" weight instead
+     of a second photo montage, so the display headline stays the sole
+     dominant asset. */
+  .page--editorial-hero{min-height:100svh;background:var(--bg);}
+  .ed-hero{
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+    padding:32px clamp(24px,7vw,80px) 96px;
+    background:var(--bg);
+  }
+  .ed-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:
+      radial-gradient(60% 50% at 82% 8%,rgba(var(--cyan-rgb),.16),transparent 70%),
+      radial-gradient(45% 40% at 8% 92%,rgba(56,119,255,.14),transparent 70%);
+    pointer-events:none;
+  }
+  .ed-hero__nav{
+    position:relative;z-index:2;
+    width:min(1120px,100%);margin:0 auto 96px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .ed-hero__logo{width:168px;height:37px;flex:0 0 auto;}
+  .ed-hero__logo img{width:100%;height:100%;object-fit:cover;}
+  .ed-hero__nav-phone{font-size:14px;font-weight:600;color:var(--muted);}
+  .ed-hero__nav-phone:hover{color:#fff;}
+
+  .ed-hero__stage{
+    position:relative;z-index:1;
+    width:min(1120px,100%);margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:32px;
+    align-items:start;
+  }
+  .ed-hero__copy{grid-column:1 / 8;min-width:0;}
+  .ed-hero__eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--cyan);
+  }
+  .ed-hero__eyebrow::before{content:"";width:28px;height:1px;background:currentColor;}
+  .ed-hero__title{
+    margin-top:24px;
+    display:flex;flex-direction:column;
+    font-size:clamp(2.75rem,4.6vw,4.75rem);
+    font-weight:900;line-height:1.02;letter-spacing:-.02em;
+  }
+  .ed-hero__title-row{color:#fff;}
+  .ed-hero__title-row--accent{
+    background:var(--grad);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .ed-hero__dek{
+    margin-top:32px;max-width:52ch;
+    font-size:18px;line-height:1.6;color:var(--muted);
+  }
+  .ed-hero__dek strong{color:#fff;font-weight:700;}
+  .ed-hero__actions{
+    margin-top:40px;
+    display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  }
+  .ed-hero__actions .rating{gap:16px;}
+  .ed-hero__actions .rating__text{font-size:14px;line-height:1.4;}
+
+  .ed-hero__proof{
+    grid-column:9 / 13;min-width:0;
+    display:flex;flex-direction:column;gap:24px;
+    margin-top:8px;
+    padding:32px;
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:12px;
+  }
+  .ed-hero__proof-eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .ed-hero__proof-stat{margin-top:8px;font-size:56px;font-weight:900;line-height:1;color:#fff;}
+  .ed-hero__proof-label{margin-top:8px;font-size:14px;font-weight:600;color:var(--cyan);}
+  .ed-hero__proof-divider{height:1px;background:var(--hairline);}
+  .ed-hero__proof-quote{display:flex;flex-direction:column;gap:12px;}
+  .ed-hero__proof-quote img{width:20px;height:16px;opacity:.6;}
+  .ed-hero__proof-quote p{font-size:14px;line-height:1.6;color:#fff;}
+  .ed-hero__proof-name{font-size:13px;font-weight:700;color:var(--muted);}
+
+  .ed-hero__rule{
+    width:min(1120px,100%);margin:96px auto 0;
+    height:1px;background:var(--hairline);
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .ed-hero__logo:hover{opacity:.86;}
+  }
+
+  @media (max-width:1023.98px){
+    .ed-hero{padding:28px clamp(20px,5vw,48px) 72px;}
+    .ed-hero__nav{margin-bottom:64px;}
+    .ed-hero__stage{grid-template-columns:1fr;row-gap:48px;}
+    .ed-hero__copy{grid-column:1 / -1;}
+    .ed-hero__title{font-size:clamp(2.5rem,6vw,3.5rem);}
+    .ed-hero__dek{max-width:none;}
+    .ed-hero__proof{grid-column:1 / -1;max-width:480px;margin-top:0;}
+    .ed-hero__rule{margin-top:64px;}
+  }
+
+  @media (max-width:639.98px){
+    .ed-hero{padding:20px 20px 56px;}
+    .ed-hero__nav{margin-bottom:48px;}
+    .ed-hero__nav-phone{display:none;}
+    .ed-hero__title{font-size:clamp(2.1rem,9vw,2.75rem);}
+    .ed-hero__dek{font-size:16px;}
+    .ed-hero__actions{gap:20px;}
+    .ed-hero__proof{padding:24px;max-width:none;}
+    .ed-hero__proof-stat{font-size:44px;}
+    .ed-hero__rule{margin-top:48px;}
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .ed-hero__eyebrow,
+    .ed-hero__title-row,
+    .ed-hero__dek,
+    .ed-hero__actions{animation:hero-enter var(--motion-slow) var(--ease-out) both;}
+    .ed-hero__title-row:nth-child(1){animation-delay:.08s;}
+    .ed-hero__title-row:nth-child(2){animation-delay:.16s;}
+    .ed-hero__title-row:nth-child(3){animation-delay:.24s;}
+    .ed-hero__dek{animation-delay:.32s;}
+    .ed-hero__actions{animation-delay:.4s;}
+    .ed-hero__proof{animation:hero-media-enter 900ms .3s var(--ease-out) both;}
+    .ed-hero .btn--featured{animation:cta-glow-pulse 2.4s ease-in-out infinite;}
+  }
+
   /* ================= LOGO MARQUEE ================= */
   .marquee{
     position:relative;
@@ -1044,8 +1179,21 @@
     gap:40px;
     padding:12px 0;
   }
-  .floating-cta-bar__message{
+  .floating-cta-bar__intro{
     flex:1;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:24px;
+  }
+  .floating-cta-bar__logo{
+    display:inline-flex;
+    align-items:center;
+    width:128px;
+    flex:0 0 128px;
+  }
+  .floating-cta-bar__logo img{display:block;width:100%;height:auto;}
+  .floating-cta-bar__message{
     min-width:0;
     font-size:15px;
     font-weight:700;
@@ -1136,7 +1284,9 @@
       gap:12px;
       padding:14px 0;
     }
-    .floating-cta-bar__message{font-size:14px;text-align:center;}
+    .floating-cta-bar__intro{width:100%;gap:16px;}
+    .floating-cta-bar__logo{width:112px;flex-basis:112px;}
+    .floating-cta-bar__message{font-size:14px;}
     .floating-cta-bar__message span{display:none;}
     .floating-cta-bar__actions{width:100%;justify-content:center;gap:8px;}
     .floating-cta-bar__phone{display:none;}
@@ -1158,6 +1308,8 @@
       gap:10px;
       padding:12px;
     }
+    .floating-cta-bar__intro{gap:12px;}
+    .floating-cta-bar__logo{width:96px;flex-basis:96px;}
     .floating-cta-bar__message{font-size:13px;}
     .floating-cta-bar__actions{width:100%;}
     .floating-cta-bar__button{

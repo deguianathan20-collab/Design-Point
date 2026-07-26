@@ -8,6 +8,10 @@
     {
       "source": "/hero-alt",
       "destination": "/index.html"
+    },
+    {
+      "source": "/hero-editorial",
+      "destination": "/index.html"
     }
   ],
   "headers": [
