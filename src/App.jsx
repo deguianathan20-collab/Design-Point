@@ -259,8 +259,9 @@ function AlternateHeroPage({ reducedMotion }) {
         <div className="alt-hero__copy">
           <Rating />
           <h1 id="alt-hero-title">
-            <span>We Design</span> High-Performance <span>Websites</span> That Perform and
-            Convert—<span>Not Just Look Good.</span>
+            <span className="grad-text">We Design</span> High-Performance{' '}
+            <span className="grad-text">Websites</span> That Perform and Convert—
+            <span className="grad-text">Not Just Look Good.</span>
           </h1>
           <p className="alt-hero__proof">
             <strong>Backed by 12+ years of experience,</strong> our Melbourne-based team creates
@@ -381,6 +382,66 @@ function EditorialHeroPage({ reducedMotion }) {
   );
 }
 
+function BentoHeroPage({ reducedMotion }) {
+  return (
+    <>
+      <main id="main">
+        <section className="bento-hero" id="top">
+          <header className="bento-hero__nav">
+            <a href="#top" className="bento-hero__logo" aria-label="Back to the top">
+              <Image file="logo.webp" alt="Design Point" />
+            </a>
+            <div className="bento-hero__nav-actions">
+              <a className="bento-hero__nav-phone" href="tel:1300123456">
+                1300 123 456
+              </a>
+              <ProposalButton className="bento-hero__nav-cta" href="#quote">
+                Get a free quote
+              </ProposalButton>
+            </div>
+          </header>
+
+          <div className="bento-hero__stage">
+            <div className="bento-hero__copy">
+              <p className="bento-hero__eyebrow">Real Results, Not Just Promises</p>
+              <h1>
+                We Design Websites That <span className="grad-text">Actually Perform.</span>
+              </h1>
+              <p className="bento-hero__dek">
+                Every result on this page is a real client outcome, not a stock template. See what
+                a custom-built, conversion-focused site does for growth.
+              </p>
+              <div className="bento-hero__actions">
+                <ProposalButton className="btn--featured" href="#quote" />
+                <Rating />
+              </div>
+            </div>
+
+            <ul className="bento-hero__grid" aria-label="Client results">
+              {caseStudies.map((item) => (
+                <li className="bento-hero__tile" key={item.client + item.stat}>
+                  <Image file={item.image} alt={item.alt} />
+                  <p className="bento-hero__tile-stat">{item.stat}</p>
+                  <p className="bento-hero__tile-client">{item.client}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <LogoMarquee reducedMotion={reducedMotion} />
+        <ProblemSection />
+        <Services />
+        <Results />
+        <Testimonials reducedMotion={reducedMotion} />
+        <Faq />
+        <FinalCta />
+      </main>
+      <Footer />
+    </>
+  );
+}
+
 function Hero() {
   return (
     <section className="hero" id="top">
@@ -410,10 +471,11 @@ function Hero() {
           <div className="hero__col">
             <Rating />
             <h1>
-              <span className="c1">We Design</span>
+              <span className="grad-text">We Design</span>
               <span className="w"> High-Performance </span>
-              <span className="c2">Websites</span>
-              <span className="w"> That Perform and Convert</span>—Not Just Look Good.
+              <span className="grad-text">Websites</span>
+              <span className="w"> That Perform and Convert</span>—
+              <span className="grad-text">Not Just Look Good.</span>
             </h1>
 
             <div className="hero__lead">
@@ -732,7 +794,7 @@ function ProblemSection() {
         <div className="problem__copy">
           <div className="problem__heading">
             <h2>
-              Is your current website{' '}
+              <span className="grad-text">Is your current website</span>{' '}
               <span className="w">
                 holding your{' '}
                 <span className="marketing-highlight">
@@ -743,7 +805,7 @@ function ProblemSection() {
                 </span>{' '}
                 back
               </span>
-              <span className="q">?</span>
+              <span className="grad-text">?</span>
             </h2>
           </div>
           <div className="body">
@@ -825,7 +887,7 @@ function Results() {
       <div className="results__inner">
         <div className="results__head">
           <h2>
-            <span className="w">Real Results</span>.
+            <span className="grad-text">Real Results</span>.
           </h2>
           <a className="results__link" href="#quote">
             <span className="grad-text">Discuss your project</span>
@@ -1061,7 +1123,7 @@ function FloatingCta() {
           </a>
           <p className="floating-cta-bar__message">
             <strong>Ready for a website that wins more business?</strong>
-            <span>Get a tailored recommendation from our Melbourne team.</span>
+            <span className="grad-text">Get a tailored recommendation from our Melbourne team.</span>
           </p>
         </div>
         <div className="floating-cta-bar__actions">
@@ -1156,12 +1218,19 @@ export default function App() {
   usePageMotion(reducedMotion);
   const pathname = window.location.pathname.replace(/\/$/, '');
   const heroVariant =
-    pathname === '/hero-alt' ? 'alt' : pathname === '/hero-editorial' ? 'editorial' : 'default';
+    pathname === '/hero-alt'
+      ? 'alt'
+      : pathname === '/hero-editorial'
+        ? 'editorial'
+        : pathname === '/hero-bento'
+          ? 'bento'
+          : 'default';
 
   const pageContent = useMemo(
     () => {
       if (heroVariant === 'alt') return <AlternateHeroPage reducedMotion={reducedMotion} />;
       if (heroVariant === 'editorial') return <EditorialHeroPage reducedMotion={reducedMotion} />;
+      if (heroVariant === 'bento') return <BentoHeroPage reducedMotion={reducedMotion} />;
 
       return (
         <>
@@ -1187,7 +1256,9 @@ export default function App() {
       ? 'page--alt-hero'
       : heroVariant === 'editorial'
         ? 'page--editorial-hero'
-        : '';
+        : heroVariant === 'bento'
+          ? 'page--bento-hero'
+          : '';
 
   return (
     <>

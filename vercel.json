@@ -12,6 +12,10 @@
     {
       "source": "/hero-editorial",
       "destination": "/index.html"
+    },
+    {
+      "source": "/hero-bento",
+      "destination": "/index.html"
     }
   ],
   "headers": [
