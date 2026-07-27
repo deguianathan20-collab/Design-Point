@@ -1228,24 +1228,27 @@ function usePageMotion(reducedMotion) {
   }, [reducedMotion]);
 }
 
+// Route -> page variant. `/light` deliberately renders the same tree as the
+// default route and only swaps the theme class, so the two cannot drift apart.
+const DEFAULT_VARIANT = { variant: 'default', pageClass: '' };
+const PAGE_VARIANTS = {
+  '/hero-alt': { variant: 'alt', pageClass: 'page--alt-hero' },
+  '/hero-editorial': { variant: 'editorial', pageClass: 'page--editorial-hero' },
+  '/hero-bento': { variant: 'bento', pageClass: 'page--bento-hero' },
+  '/light': { variant: 'default', pageClass: 'page--light' },
+};
+
 export default function App() {
   const reducedMotion = useReducedMotion();
   usePageMotion(reducedMotion);
   const pathname = window.location.pathname.replace(/\/$/, '');
-  const heroVariant =
-    pathname === '/hero-alt'
-      ? 'alt'
-      : pathname === '/hero-editorial'
-        ? 'editorial'
-        : pathname === '/hero-bento'
-          ? 'bento'
-          : 'default';
+  const { variant, pageClass } = PAGE_VARIANTS[pathname] ?? DEFAULT_VARIANT;
 
   const pageContent = useMemo(
     () => {
-      if (heroVariant === 'alt') return <AlternateHeroPage reducedMotion={reducedMotion} />;
-      if (heroVariant === 'editorial') return <EditorialHeroPage reducedMotion={reducedMotion} />;
-      if (heroVariant === 'bento') return <BentoHeroPage reducedMotion={reducedMotion} />;
+      if (variant === 'alt') return <AlternateHeroPage reducedMotion={reducedMotion} />;
+      if (variant === 'editorial') return <EditorialHeroPage reducedMotion={reducedMotion} />;
+      if (variant === 'bento') return <BentoHeroPage reducedMotion={reducedMotion} />;
 
       return (
         <>
@@ -1263,24 +1266,15 @@ export default function App() {
         </>
       );
     },
-    [heroVariant, reducedMotion],
+    [variant, reducedMotion],
   );
-
-  const pageModifierClass =
-    heroVariant === 'alt'
-      ? 'page--alt-hero'
-      : heroVariant === 'editorial'
-        ? 'page--editorial-hero'
-        : heroVariant === 'bento'
-          ? 'page--bento-hero'
-          : '';
 
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <div className={`page ${pageModifierClass}`.trim()}>{pageContent}</div>
+      <div className={`page ${pageClass}`.trim()}>{pageContent}</div>
       <FloatingCta />
     </>
   );

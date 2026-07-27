@@ -1715,3 +1715,64 @@
     .footer__legal a,
     .footer__contact a{display:inline-flex;align-items:center;min-height:44px;}
   }
+
+  /* ================= LIGHT THEME (/light) =================
+     Inverse of the default route: the hero and the logo strip stay dark, and
+     everything from the problem section down flips to a light surface. Scoped
+     to <main> because that element contains exactly the flippable region --
+     the hero, the logo marquee (whose logo artwork is light-on-dark and would
+     disappear) and the footer all sit outside it. The dark footer closes the
+     page so the light band reads as a deliberate middle movement rather than
+     a half-finished theme. */
+  .page--light main{
+    --card:#FFFFFF;
+    --hairline:rgba(11,15,25,.10);
+    --muted:#55607A;
+    background:#F5F8FC;
+    color:#0B0F19;
+  }
+
+  /* Redrawn with deeper stops: the display cyan sits near 2:1 on white, under
+     the 3:1 large-text minimum. These stops hold 4.4:1 and 7:1. */
+  .page--light main .grad-text{
+    background:linear-gradient(90deg,#00808F 0%,#0043D4 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+  }
+
+  .page--light main .problem__copy h2,
+  .page--light main .problem__copy h2 .w,
+  .page--light main .results__head h2,
+  .page--light main .services__foot p .w,
+  .page--light main .testimonials__inner > h2 .w{
+    color:#0B0F19;
+    -webkit-text-fill-color:#0B0F19;
+  }
+
+  /* Inverted so the wireframe texture reads as a faint blueprint rather than
+     dark smudges. */
+  .page--light main .sec-bg{filter:invert(1) grayscale(1);opacity:.05;}
+
+  .page--light main .card{
+    box-shadow:0 1px 2px rgba(11,15,25,.04),0 12px 32px rgba(11,15,25,.05);
+  }
+
+  /* arrow-hero.svg ships stroke="white" for gradient buttons; the standalone
+     one needs ink. Arrows inside .btn keep their existing white filter. */
+  .page--light main .results__link .arrow img{filter:brightness(0);}
+
+  .page--light main .form-card{
+    background:#FFFFFF;
+    box-shadow:0 1px 2px rgba(11,15,25,.04),0 16px 40px rgba(11,15,25,.07);
+  }
+  .page--light main .field input{
+    border-color:rgba(11,15,25,.20);
+    background:#FFFFFF;
+  }
+  .page--light main .field input[aria-invalid="true"]{
+    border-color:#B42318;
+    box-shadow:0 0 0 3px rgba(180,35,24,.14);
+  }
+  .page--light main .field__error,
+  .page--light main .form-card__status.is-error{color:#B42318;}
+  .page--light main .form-card__status.is-success{color:#0A6E4A;}
