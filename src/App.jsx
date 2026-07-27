@@ -256,9 +256,7 @@ function AlternateHeroPage({ reducedMotion }) {
         </a>
         <div className="alt-hero__nav-actions">
           <a href="tel:1300123456">1300 123 456</a>
-          <ProposalButton className="alt-hero__nav-cta" href="#quote">
-            Get a free quote
-          </ProposalButton>
+          <ProposalButton className="alt-hero__nav-cta" href="#quote" />
         </div>
       </header>
 
@@ -402,9 +400,7 @@ function BentoHeroPage({ reducedMotion }) {
               <a className="bento-hero__nav-phone" href="tel:1300123456">
                 1300 123 456
               </a>
-              <ProposalButton className="bento-hero__nav-cta" href="#quote">
-                Get a free quote
-              </ProposalButton>
+              <ProposalButton className="bento-hero__nav-cta" href="#quote" />
             </div>
           </header>
 
@@ -790,7 +786,7 @@ function ContactForm() {
       </div>
       <div className="form-card__actions">
         <button className="btn" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Sending request…' : 'Get my free proposal'}
+          {isSubmitting ? 'Sending request…' : 'Get a free website proposal'}
           <ArrowIcon />
         </button>
         <p className="form-card__privacy">We’ll only use your details to respond to your enquiry.</p>
@@ -1040,9 +1036,9 @@ function FinalCta() {
           <Image file="underline-cta.svg" alt="" />
         </div>
         <p>
-          Claim your free 45-minute Web Performance Strategy Session with a senior Australian
-          digital architect. We will map your user paths, audit your speed, and find conversion
-          leaks.
+          Your free website proposal starts with a 45-minute strategy session with a senior
+          Australian digital architect. We&apos;ll map your user paths, audit your speed, and find
+          conversion leaks.
         </p>
       </div>
       <ProposalButton className="btn--featured" />
