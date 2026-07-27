@@ -781,7 +781,9 @@
   .icon-box img{width:25px;height:25px;}
   .card__text{display:flex;flex-direction:column;gap:16px;}
   .card__text h3{font-size:20px;font-weight:700;line-height:1.1;}
-  .card__text p{font-size:16px;font-weight:400;line-height:1.7;height:64px;}
+  /* min-height, not height: these equalise card heights across a row, but a
+     fixed height clips the copy once user text-spacing overrides apply. */
+  .card__text p{font-size:16px;font-weight:400;line-height:1.7;min-height:64px;}
 
   .services__foot{width:100%;display:flex;align-items:flex-end;justify-content:space-between;}
   .services__foot p{width:705px;font-size:32px;font-weight:800;line-height:1.2;}
@@ -809,7 +811,7 @@
   .case__top{display:flex;flex-direction:column;gap:56px;}
   .case__stat{display:flex;flex-direction:column;gap:16px;}
   .case__stat .num{font-size:40px;font-weight:700;line-height:1.1;}
-  .case__stat .label{font-size:20px;font-weight:700;line-height:1.1;height:48px;}
+  .case__stat .label{font-size:20px;font-weight:700;line-height:1.1;min-height:48px;}
   .case__client{font-size:16px;font-weight:500;line-height:1.7;white-space:nowrap;}
   .case__img{width:100%;aspect-ratio:430/280;border-radius:4px;opacity:.9;position:relative;}
   .case__img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:4px;}
@@ -1062,8 +1064,8 @@
     .hero__person{left:-6.798%;top:11.876%;width:113.596%;height:72.806%;}
 
     /* release fixed heights so wrapped text can never clip */
-    .card__text p{height:auto;}
-    .case__stat .label{height:auto;}
+    .card__text p{min-height:0;}
+    .case__stat .label{min-height:0;}
     .testimonial,.t1,.t2,.t4{height:auto;}
 
     /* Keep the squiggle compact while the hero composition is still fluid. */
@@ -1726,7 +1728,7 @@
      a half-finished theme. */
   .page--light main{
     --card:#FFFFFF;
-    --hairline:rgba(11,15,25,.10);
+    --hairline:rgba(11,15,25,.14);
     --muted:#55607A;
     background:#F5F8FC;
     color:#0B0F19;
@@ -1765,10 +1767,23 @@
     background:#FFFFFF;
     box-shadow:0 1px 2px rgba(11,15,25,.04),0 16px 40px rgba(11,15,25,.07);
   }
+  /* A white field on a white card is identified only by its border, so that
+     border carries the 3:1 non-text minimum (1.4.11). At .20 it sat at 1.6:1. */
   .page--light main .field input{
-    border-color:rgba(11,15,25,.20);
+    border-color:rgba(11,15,25,.48);
     background:#FFFFFF;
   }
+
+  /* The display cyan is a 2.9:1 focus ring on the light surface, under the 3:1
+     floor; the deep blue holds 7.2:1. Buttons keep their own dark-on-gradient
+     ring from the shared rules. */
+  .page--light main :focus-visible,
+  .page--light main .field input:focus-visible{outline-color:var(--blue-deep);}
+
+  /* Required markers and the FAQ expand affordance are both cyan-on-white at
+     ~2.9:1 -- under 4.5:1 as text and under 3:1 as a control affordance. */
+  .page--light main .field label > span[aria-hidden="true"]{color:var(--blue-deep);}
+  .page--light main .faq__item summary img{filter:brightness(.62);}
   .page--light main .field input[aria-invalid="true"]{
     border-color:#B42318;
     box-shadow:0 0 0 3px rgba(180,35,24,.14);
